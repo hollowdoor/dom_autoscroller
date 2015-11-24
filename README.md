@@ -9,7 +9,7 @@ Install
 Usage
 -----
 
-This example uses **[link-css](https://www.npmjs.com/package/link-css\)**, and **[dragula](https://www.npmjs.com/package/dragula\)**.
+This example uses [link-css](https://www.npmjs.com/package/link-css), and [dragula](https://www.npmjs.com/package/dragula).
 
 ```javascript
 require('link-css')('../node_modules/dragula/dist/dragula.min.css');
