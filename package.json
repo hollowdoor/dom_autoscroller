@@ -1,0 +1,24 @@
+{
+  "name": "dom-autoscroller",
+  "version": "1.0.0",
+  "description": "Auto scroll dom elements",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "scrolling",
+    "DOM"
+  ],
+  "author": "Quentin Engles <hollowdoor99@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "pointer-point": "^2.1.7"
+  },
+  "devDependencies": {
+    "dragula": "^3.5.4"
+  }
+}
