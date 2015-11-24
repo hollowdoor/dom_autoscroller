@@ -53,7 +53,6 @@ For clarity here is a more complete example:
     </style>
 </head>
 <body>
-    <button id="scroll-button">Scroll List</button>
     <div id="list-container">
         <ol id="list" type="1">
             <li>zero</li>
@@ -74,7 +73,26 @@ For clarity here is a more complete example:
             <li>fifteen</li>
         </ol>
     </div>
-
+    <div id="container2">
+        <ol id="hlist">
+            <li>zero</li>
+            <li>one</li>
+            <li>two</li>
+            <li>three</li>
+            <li>four</li>
+            <li>five</li>
+            <li>six</li>
+            <li>seven</li>
+            <li>eight</li>
+            <li>nine</li>
+            <li>ten</li>
+            <li>11</li>
+            <li>12</li>
+            <li>13</li>
+            <li>14</li>
+            <li>15</li>
+        </ol>
+    </div>
     <script>
     //Load dragula's css.
     require('link-css')('../node_modules/dragula/dist/dragula.min.css');
@@ -98,7 +116,7 @@ For clarity here is a more complete example:
 </html>
 ```
 
-If you look at the last example notice the containers have only one child. In theory multiple children could work with `dom-autoscroller`, but the children scrolling might interfere with the workings of the library *dragula*.
+If you look at the last example notice the containers have only one child, and that they're different from the containers used by *dragula*. In theory multiple children could work with `dom-autoscroller`, but the children scrolling might interfere with the workings of the library *dragula*.
 
 Auto Scroller API
 -----------------
