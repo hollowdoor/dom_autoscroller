@@ -1,5 +1,10 @@
 var pointer = require('pointer-point');
 
+/*
+git remote add origin https://github.com/hollowdoor/dom_autoscroller.git
+git push -u origin master
+*/
+
 function AutoScrollerFactory(element, options){
     return new AutoScroller(element, options);
 }
