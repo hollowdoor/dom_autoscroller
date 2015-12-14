@@ -30,6 +30,10 @@ function AutoScroller(elements, options){
         this.autoScroll = options.autoScroll;
     }
 
+    this.destroy = function() {
+        this.point.destroy();
+    };
+
     Object.defineProperties(this, {
         down: {
             get: function(){ return self.point.down; }
