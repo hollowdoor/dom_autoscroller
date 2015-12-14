@@ -165,6 +165,10 @@ Auto Scroller Methods
 
 The function you set in the constructor options for `options.autoScroll`.
 
+### destroy
+
+Remove all event listeners needed to be able track the pointer.
+
 About
 -----
 
