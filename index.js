@@ -15,6 +15,7 @@ function AutoScroller(elements, options){
 
     this.margin = options.margin || -1;
     this.scrolling = false;
+    this.scrollWhenOutside = options.scrollWhenOutside || false;
 
     this.point = pointer(elements);
 
@@ -47,7 +48,7 @@ function AutoScroller(elements, options){
 
         if(!el) return;
         if(!self.autoScroll()) return;
-        if(!this.inside(el)) return;
+        if(!self.scrollWhenOutside && this.outside(el)) return;
 
         if(self.point.y < rect.top + self.margin){
             autoScrollV(el, -1, rect);
@@ -65,7 +66,7 @@ function AutoScroller(elements, options){
     function autoScrollV(el, amount, rect){
         //if(!self.down) return;
         if(!self.autoScroll()) return;
-        if(!self.point.inside(el)) return;
+        if(!self.scrollWhenOutside && self.point.outside(el)) return;
         if(el === window){
             window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
         }else{
@@ -84,7 +85,7 @@ function AutoScroller(elements, options){
     function autoScrollH(el, amount, rect){
         //if(!self.down) return;
         if(!self.autoScroll()) return;
-        if(!self.point.inside(el)) return;
+        if(!self.scrollWhenOutside && self.point.outside(el)) return;
         if(el === window){
             window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
         }else{
