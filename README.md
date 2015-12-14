@@ -24,6 +24,7 @@ var scroll = autoScroll([
     ],{
     margin: 20,
     pixels: 5,
+    scrollWhenOutside: true,
     autoScroll: function(){
         //Only scroll when the pointer is down, and there is a child being dragged.
         return this.down && drake.dragging;
@@ -107,6 +108,7 @@ For clarity here is a more complete example:
         ],{
         margin: 20,
         pixels: 5,
+        scrollWhenOutside: false,
         autoScroll: function(){
             return this.down && drake.dragging;
         }
@@ -140,6 +142,10 @@ Return a boolean value from this function to allow scrolling.
 #### options.pixels = Integer
 
 Set how many pixels per second you want to scroll during the auto scrolling action. More is smoother.
+
+#### options.scrollWhenOutside = Boolean
+
+Whther or not it should continue to scroll when the pointer is outside the container. Defaults to **false**.
 
 Auto Scroller Properties
 ------------------------
