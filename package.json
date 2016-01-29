@@ -1,6 +1,6 @@
 {
   "name": "dom-autoscroller",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Auto scroll dom elements",
   "main": "index.js",
   "directories": {
@@ -16,7 +16,7 @@
   "author": "Quentin Engles <hollowdoor99@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "pointer-point": "^2.1.7"
+    "pointer-point": "^2.1.12"
   },
   "devDependencies": {
     "dragula": "^3.5.4"
