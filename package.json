@@ -1,6 +1,6 @@
 {
   "name": "dom-autoscroller",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Auto scroll dom elements",
   "main": "index.js",
   "directories": {
