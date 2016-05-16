@@ -2,3 +2,6 @@
 npm-debug.log
 test
 .jshintrc
+
+# Ignore compiled files
+dist
