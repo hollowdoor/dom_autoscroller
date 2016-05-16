@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify index.js > dist/dom-autoscroller.js",
+    "minify": "browserify index.js -d -p [minifyify --no-map] > dist/dom-autoscroller.min.js"
   },
   "keywords": [
     "scrolling",
@@ -19,10 +21,17 @@
     "pointer-point": "^2.1.12"
   },
   "devDependencies": {
-    "dragula": "^3.5.4"
+    "browserify": "^13.0.1",
+    "dragula": "^3.5.4",
+    "minifyify": "^7.3.3"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/hollowdoor/dom_autoscroller.git"
-  }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "index.js"
+  ]
 }
