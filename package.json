@@ -9,8 +9,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify index.js --standalone autoScroller > dist/dom-autoscroller.js",
-    "minify": "browserify index.js -d -p [minifyify --no-map] --standalone autoScroller > dist/dom-autoscroller.min.js"
+    "minify": "browserify index.js -d -p [minifyify --no-map] --standalone autoScroller > dist/dom-autoscroller.min.js",
+    "lint": "jshint .",
+    "validate": "npm ls"
   },
+  "pre-commit": [
+    "build",
+    "minify"
+  ],
   "keywords": [
     "scrolling",
     "DOM"
@@ -18,12 +24,13 @@
   "author": "Quentin Engles <hollowdoor99@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "pointer-point": "^2.1.12"
+    "create-point-cb": "^1.0.0"
   },
   "devDependencies": {
     "browserify": "^13.0.1",
     "dragula": "^3.5.4",
-    "minifyify": "^7.3.3"
+    "minifyify": "^7.3.3",
+    "precommit-hook": "^3.0.0"
   },
   "repository": {
     "type": "git",

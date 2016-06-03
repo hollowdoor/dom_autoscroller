@@ -6,6 +6,13 @@ Install
 
 `npm install --save dom-autoscroller`
 
+Then use browserify (maybe webpack) to build your script.
+
+Or Download one of these files from the Github repo:
+
+-	*dist/dom-autoscroller.js*
+-	*dist/dom-autoscroller.min.js*
+
 Usage
 -----
 
