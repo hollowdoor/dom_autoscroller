@@ -10,12 +10,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify index.js --standalone autoScroller > dist/dom-autoscroller.js",
     "minify": "browserify index.js -d -p [minifyify --no-map] --standalone autoScroller > dist/dom-autoscroller.min.js",
+    "gadd": "git add dist",
     "lint": "jshint .",
     "validate": "npm ls"
   },
   "pre-commit": [
     "build",
-    "minify"
+    "minify",
+    "gadd"
   ],
   "keywords": [
     "scrolling",

@@ -4,4 +4,4 @@ test
 .jshintrc
 
 # Ignore compiled files
-dist
+# dist
