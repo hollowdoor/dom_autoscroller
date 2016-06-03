@@ -138,30 +138,7 @@ function AutoScroller(elements, options){
         }
     }
 
-    /*this.point.on('move', function(el, rect){
 
-        console.log('moveing ', ++n,  el)
-
-
-        if(!el) return;
-        if(!self.autoScroll()) return;
-        //if(!self.scrollWhenOutside && self.point.outside(el)) return;
-        if(self.point.outside(el)) return;
-
-        rect = pointer.getRect(el);
-
-        if(self.point.y < rect.top + self.margin){
-            autoScrollV(el, -1, rect);
-        }else if(self.point.y > rect.bottom - self.margin){
-            autoScrollV(el, 1, rect);
-        }
-
-        if(self.point.x < rect.left + self.margin){
-            autoScrollH(el, -1, rect);
-        }else if(self.point.x > rect.right - self.margin){
-            autoScrollH(el, 1, rect);
-        }
-    });*/
 
     function autoScrollV(el, amount, rect){
 
@@ -225,7 +202,6 @@ function getRect(el){
         try{
             return el.getBoundingClientRect();
         }catch(e){
-            console.log(el)
             throw new TypeError("Can't call getBoundingClientRect on "+el);
         }
 
