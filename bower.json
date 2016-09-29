@@ -1,0 +1,20 @@
+{
+  "name": "dom-autoscroller",
+  "version": "1.4.0",
+  "description": "Auto scroll dom elements",
+  "main": "dist/dom-autoscroller.js",
+  "keywords": [
+    "scroll", "scroller", "autoscroll"
+  ],
+  "authors": [
+    "Quentin Engles"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/hollowdoor/dom_autoscroller",
+  "ignore": [
+    ".jshintignore",
+    ".gitignore",
+    "README.md"
+  ]
+}
+
