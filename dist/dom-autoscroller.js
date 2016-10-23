@@ -6,7 +6,23 @@ git remote add origin https://github.com/hollowdoor/dom_autoscroller.git
 git push -u origin master
 */
 
+var requestFrame = (function(){
+    if(requestAnimationFrame){
+        return requestAnimationFrame;
+    }else{
+        return function(fn){
+            return setTimeout(fn);
+        };
+    }
+}());
 
+var cancelFrame = (function(){
+    if(cancelAnimationFrame){
+        return cancelAnimationFrame;
+    }else{
+        return clearTimeout;
+    }
+}());
 
 function AutoScroller(elements, options){
     var self = this, pixels = 2;
@@ -65,13 +81,21 @@ function AutoScroller(elements, options){
         pixels: {
             set: function(i){ pixels = i; },
             get: function(){ return pixels; }
+        },
+        speed: {
+            get: function(){ return pixels; }
         }
     });
+
+    var n = 0, current, animationFrame, started = false;
 
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
     window.addEventListener('mouseup', onUp, false);
     window.addEventListener('touchend', onUp, false);
+
+    window.addEventListener('mousemove', onMove, false);
+    window.addEventListener('touchmove', onMove, false);
 
     function onDown(){
         down = true;
@@ -79,12 +103,9 @@ function AutoScroller(elements, options){
 
     function onUp(){
         down = false;
+        started = false;
+        cancelFrame(animationFrame);
     }
-
-    var n = 0, current;
-
-    window.addEventListener('mousemove', onMove, false);
-    window.addEventListener('touchmove', onMove, false);
 
     function onMove(event){
 
@@ -114,19 +135,62 @@ function AutoScroller(elements, options){
             }
         }
 
+        cancelFrame(animationFrame);
+        animationFrame = requestFrame(scrollTick);
+    }
+
+    function scrollTick(){
+        started = true;
         if(hasWindow){
             autoScroll(hasWindow);
         }
 
-        if(!current) return;
+        if(!current){
+            started = false;
+            return;
+        }
 
         autoScroll(current);
+
+        cancelFrame(animationFrame);
+        animationFrame = requestFrame(scrollTick);
+
     }
 
     function autoScroll(el){
-        var rect = getRect(el);
+        var rect = getRect(el), scrollx, scrolly;
+
+        if(point.x < rect.left + self.margin){
+            scrollx = Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.speed;
+        }else if(point.x > rect.right - self.margin){
+            scrollx = Math.min(1, (point.x - rect.right) / self.margin + 1) * self.speed;
+        }else{
+            scrollx = 0;
+        }
 
         if(point.y < rect.top + self.margin){
+            scrolly = Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.speed;
+        }else if(point.y > rect.bottom - self.margin){
+            scrolly = Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.speed;
+        }else{
+            scrolly = 0;
+        }
+
+        setTimeout(function(){
+            if(scrolly){
+                scrollY(el, scrolly);
+            }
+
+            if(scrollx){
+                scrollX(el, scrollx);
+            }
+
+        })
+
+
+
+
+        /*if(point.y < rect.top + self.margin){
             autoScrollV(el, -1, rect);
         }else if(point.y > rect.bottom - self.margin){
             autoScrollV(el, 1, rect);
@@ -136,6 +200,24 @@ function AutoScroller(elements, options){
             autoScrollH(el, -1, rect);
         }else if(point.x > rect.right - self.margin){
             autoScrollH(el, 1, rect);
+        }*/
+    }
+
+    function scrollY(el, amount){
+        if(el === window){
+            window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
+        }else{
+            //el.scrollTop = el.scrollTop + amount;
+            el.scrollTop += amount;
+        }
+    }
+
+    function scrollX(el, amount){
+        if(el === window){
+            window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
+        }else{
+            //el.scrollLeft = el.scrollLeft + amount;
+            el.scrollLeft += amount;
         }
     }
 
@@ -159,7 +241,7 @@ function AutoScroller(elements, options){
             }else if(point.y > rect.bottom - self.margin){
                 autoScrollV(el, amount, rect);
             }
-        }, self.interval);
+        });//, self.interval);
     }
 
     function autoScrollH(el, amount, rect){
@@ -179,7 +261,7 @@ function AutoScroller(elements, options){
             }else if(point.x > rect.right - self.margin){
                 autoScrollH(el, amount, rect);
             }
-        }, self.interval);
+        });//, self.interval);
     }
 
 }
