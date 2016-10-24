@@ -56,12 +56,18 @@ function AutoScroller(elements, options){
         window.removeEventListener('touchstart', onDown, false);
         window.removeEventListener('mouseup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
+        elements = [];
     };
 
-    this.add = function(element){
+    function getElement(element){
         if(typeof element === 'string'){
-            element = document.querySelector(element);
+            return document.querySelector(element);
         }
+        return element;
+    }
+
+    this.add = function(element){
+        element = getElement(element);
 
         for(var i=0; i<elements.length; i++){
             if(elements[i] === element) return this;
@@ -72,6 +78,8 @@ function AutoScroller(elements, options){
     };
 
     this.remove = function(element){
+        element = getElement(element);
+
         for(var i=0; i<elements.length; i++){
             if(element === elements[i]){
                 elements.splice(i, 1);
