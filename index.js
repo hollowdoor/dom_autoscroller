@@ -24,7 +24,7 @@ var cancelFrame = (function(){
 }());
 
 function AutoScroller(elements, options){
-    var self = this, pixels = 2;
+    var self = this, maxSpeed = 4;
     options = options || {};
 
     this.margin = options.margin || -1;
@@ -36,8 +36,8 @@ function AutoScroller(elements, options){
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
 
-    if(!isNaN(options.pixels)){
-        pixels = options.pixels;
+    if(!isNaN(options.maxSpeed)){
+        maxSpeed = options.maxSpeed;
     }
 
     if(typeof options.autoScroll === 'boolean'){
@@ -74,15 +74,8 @@ function AutoScroller(elements, options){
         down: {
             get: function(){ return down; }
         },
-        interval: {
-            get: function(){ return 1/pixels * 1000; }
-        },
-        pixels: {
-            set: function(i){ pixels = i; },
-            get: function(){ return pixels; }
-        },
-        speed: {
-            get: function(){ return pixels; }
+        maxSpeed: {
+            get: function(){ return maxSpeed; }
         }
     });
 
@@ -112,7 +105,7 @@ function AutoScroller(elements, options){
         if(!event.target) return;
         var target = event.target, last;
 
-        if(!current || !inside(point, current)){
+        if(!current || !inside(point, current) && !self.scrollWhenOutside){
             if(!current && target){
                 current = null;
                 while(target = target.parentNode){
@@ -139,13 +132,11 @@ function AutoScroller(elements, options){
     }
 
     function scrollTick(){
-        started = true;
         if(hasWindow){
             autoScroll(hasWindow);
         }
 
         if(!current){
-            started = false;
             return;
         }
 
@@ -160,22 +151,23 @@ function AutoScroller(elements, options){
         var rect = getRect(el), scrollx, scrolly;
 
         if(point.x < rect.left + self.margin){
-            scrollx = Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.speed;
+            scrollx = Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed;
         }else if(point.x > rect.right - self.margin){
-            scrollx = Math.min(1, (point.x - rect.right) / self.margin + 1) * self.speed;
+            scrollx = Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed;
         }else{
             scrollx = 0;
         }
 
         if(point.y < rect.top + self.margin){
-            scrolly = Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.speed;
+            scrolly = Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed;
         }else if(point.y > rect.bottom - self.margin){
-            scrolly = Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.speed;
+            scrolly = Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed;
         }else{
             scrolly = 0;
         }
 
         setTimeout(function(){
+
             if(scrolly){
                 scrollY(el, scrolly);
             }
@@ -184,22 +176,7 @@ function AutoScroller(elements, options){
                 scrollX(el, scrollx);
             }
 
-        })
-
-
-
-
-        /*if(point.y < rect.top + self.margin){
-            autoScrollV(el, -1, rect);
-        }else if(point.y > rect.bottom - self.margin){
-            autoScrollV(el, 1, rect);
-        }
-
-        if(point.x < rect.left + self.margin){
-            autoScrollH(el, -1, rect);
-        }else if(point.x > rect.right - self.margin){
-            autoScrollH(el, 1, rect);
-        }*/
+        });
     }
 
     function scrollY(el, amount){
@@ -218,49 +195,6 @@ function AutoScroller(elements, options){
             //el.scrollLeft = el.scrollLeft + amount;
             el.scrollLeft += amount;
         }
-    }
-
-
-
-    function autoScrollV(el, amount, rect){
-
-        if(!self.autoScroll()) return;
-        if(!self.scrollWhenOutside && !inside(point, el, rect)) return;
-
-        if(el === window){
-            window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
-        }else{
-
-            el.scrollTop = el.scrollTop + amount;
-        }
-
-        setTimeout(function(){
-            if(point.y < rect.top + self.margin){
-                autoScrollV(el, amount, rect);
-            }else if(point.y > rect.bottom - self.margin){
-                autoScrollV(el, amount, rect);
-            }
-        });//, self.interval);
-    }
-
-    function autoScrollH(el, amount, rect){
-
-        if(!self.autoScroll()) return;
-        if(!self.scrollWhenOutside && !inside(point, el, rect)) return;
-
-        if(el === window){
-            window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
-        }else{
-            el.scrollLeft = el.scrollLeft + amount;
-        }
-
-        setTimeout(function(){
-            if(point.x < rect.left + self.margin){
-                autoScrollH(el, amount, rect);
-            }else if(point.x > rect.right - self.margin){
-                autoScrollH(el, amount, rect);
-            }
-        });//, self.interval);
     }
 
 }
