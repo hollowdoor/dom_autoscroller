@@ -58,18 +58,41 @@ function AutoScroller(elements, options){
         window.removeEventListener('touchend', onUp, false);
     };
 
-    var hasWindow = null, temp = [];
-    for(var i=0; i<elements.length; i++){
-        if(elements[i] === window){
-            hasWindow = window;
-            break;
-        }else{
-            temp.push(elements[i])
+    this.add = function(element){
+        if(typeof element === 'string'){
+            element = document.querySelector(element);
         }
-    }
 
-    elements = temp;
-    temp = null;
+        for(var i=0; i<elements.length; i++){
+            if(elements[i] === element) return this;
+        }
+
+        elements.push(element);
+        return this;
+    };
+
+    this.remove = function(element){
+        for(var i=0; i<elements.length; i++){
+            if(element === elements[i]){
+                elements.splice(i, 1);
+                return this;
+            }
+        }
+        return this;
+    };
+
+    var hasWindow = null;
+
+    (function(temp){
+        elements = [];
+        temp.forEach(function(element){
+            if(element === window){
+                hasWindow = window;
+            }else{
+                self.add(element);
+            }
+        })
+    }(elements));
 
     Object.defineProperties(this, {
         down: {
