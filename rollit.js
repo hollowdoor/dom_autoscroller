@@ -39,7 +39,7 @@ rollup.rollup({
         dest: 'dist/dom-autoscroller.js',
         format: 'iife',
         sourceMap: true,
-        moduleName: 'dom_autoscroller'
+        moduleName: 'autoScroll'
     });
 
     b.then(what=>{
@@ -54,20 +54,6 @@ rollup.rollup({
 
     })
 }).catch(onError);
-
-
-
-/*rollup.rollup({
-    entry: 'src/index.js',
-    plugins: [babel(), uglify()],
-}).then((bundle)=>{
-    bundle.write({
-        dest: 'dist/dom-autoscroller.min.js',
-        format: 'iife',
-        sourceMap: true,
-        moduleName: 'dom-autoscroller'
-    });
-}).catch(onError);*/
 
 rollup.rollup({
     entry: 'test/src.js',
@@ -84,35 +70,10 @@ rollup.rollup({
         dest: 'test/code.js',
         format: 'iife',
         sourceMap: true,
-        moduleName: 'test_autoscroller'
+        moduleName: 'autoScroll'
     });
 }).catch(onError);
 
 function onError(e){
     if(e) console.log(e);
 }
-
-/*export default {
-  entry: 'src/index.js',
-  plugins: [babel()],
-  external: external,
-  targets: [
-    {
-      dest: 'dist/bundle.js',
-      format: 'cjs',
-      moduleName: 'html',
-      sourceMap: true
-    },
-    {
-      dest: 'dist/bundle.es.js',
-      format: 'es',
-      sourceMap: true
-    }
-  ]
-};*/
-/*export default {
-  entry: 'src/index.js',
-  format: 'cjs',
-  plugins: [ babel() ],
-  dest: 'dist/bundle.js' // equivalent to --output
-};*/

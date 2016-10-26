@@ -12,9 +12,7 @@
     "build": "node ./rollit"
   },
   "pre-commit": [
-    "build",
-    "minify",
-    "gadd"
+    "build"
   ],
   "keywords": [
     "scrolling",
