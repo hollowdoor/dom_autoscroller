@@ -83,7 +83,7 @@ function AutoScroller(elements, options = {}){
         return this;
     };
 
-    let hasWindow = null;
+    let hasWindow = null, windowAnimationFrame;
 
     (function(temp){
         elements = [];
@@ -105,7 +105,7 @@ function AutoScroller(elements, options = {}){
         }
     });
 
-    let n = 0, current, animationFrame, started = false;
+    let n = 0, current = null, animationFrame;
 
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
@@ -121,46 +121,88 @@ function AutoScroller(elements, options = {}){
 
     function onUp(){
         down = false;
-        started = false;
         cancelFrame(animationFrame);
+    }
+
+    function getTarget(target){
+        if(!target){
+            return null;
+        }
+
+        if(current === target){
+            return target;
+        }
+
+        for(var i=0; i<elements.length; i++){
+            if(elements[i] === target){
+                return target;
+            }
+        }
+
+        while(target = target.parentNode){
+            for(var i=0; i<elements.length; i++){
+                if(elements[i] === target){
+                    return target;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    function getElementUnderPoint(){
+        let underPoint = null;
+
+        for(var i=0; i<elements.length; i++){
+            if(inside(point, elements[i])){
+                underPoint = elements[i];
+            }
+        }
+
+        return underPoint;
     }
 
     function onMove(event){
 
         if(!self.autoScroll()) return;
-        if(!event.target) return;
-        let target = event.target, last;
+        let target = event.target, body = document.body;
 
-        if(!current || !inside(point, current) && !self.scrollWhenOutside){
-            if(!current && target){
-                current = null;
-                while(target = target.parentNode){
-                    for(var i=0; i<elements.length; i++){
-                        if(elements[i] === target && inside(point, elements[i])){
-                            current = elements[i];
-                            break;
-                        }
-                    }
-                }
+        if(current && !inside(point, current)){
+            current = null;
+        }
+
+        if(target && target.parentNode === body){
+            //The special condition to improve speed.
+            current = getElementUnderPoint();
+        }else{
+            target = getTarget(target);
+
+            if(target){
+                current = target;
             }else{
-                last = current;
-                current = null;
-                for(var i=0; i<elements.length; i++){
-                    if(elements[i] !== last && inside(point, elements[i])){
-                        current = elements[i];
-                    }
-                }
+                //The target might have still been moved.
+                current = getElementUnderPoint();
             }
+        }
+
+        if(hasWindow){
+            cancelFrame(windowAnimationFrame);
+            windowAnimationFrame = requestFrame(scrollWindow);
+        }
+
+        if(!current){
+            return;
         }
 
         cancelFrame(animationFrame);
         animationFrame = requestFrame(scrollTick);
     }
 
+    function scrollWindow(){
+        autoScroll(hasWindow);
+    }
+
     function scrollTick(){
-        if(hasWindow){
-            autoScroll(hasWindow);
-        }
 
         if(!current){
             return;
