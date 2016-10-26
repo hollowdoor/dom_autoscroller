@@ -1,4 +1,4 @@
-var dom_autoscroller = (function (createPointCB) {
+var autoScroll = (function (createPointCB) {
     'use strict';
 
     createPointCB = 'default' in createPointCB ? createPointCB['default'] : createPointCB;

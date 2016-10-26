@@ -12,7 +12,7 @@ Here are the differences.
 -	maxSpeed option added.
 -	Slightly different algorithm for scrolling
 -	Scrolling speed changes dynamically based on distance from element edge
--	Compatibility with rollup.
+-	Compatibility with [rollup](https://github.com/rollup/rollup).
 
 Scrolling in dom-autoscroller is now much smoother. So you should upgrade to version 2.
 
@@ -21,7 +21,7 @@ Install
 
 `npm install --save dom-autoscroller`
 
-Then use browserify, webpack, or rollup to build your script.
+Then use browserify, webpack, or [rollup](https://github.com/rollup/rollup) to build your script.
 
 Or Download one of these files from the Github repo:
 
@@ -224,7 +224,7 @@ These methods add, or remove elements from dom-autoscroller.
 
 Why are these considered undocumented even though there here in the document? :)
 
-`add`, and `remove` are incomplete, and there is no detailed explanation.
+`add`, and `remove` are incomplete, and there is no detailed explanation. Use these methods at your own risk.
 
 About
 -----
