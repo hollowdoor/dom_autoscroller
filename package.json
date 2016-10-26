@@ -2,17 +2,14 @@
   "name": "dom-autoscroller",
   "version": "1.4.1",
   "description": "Auto scroll dom elements",
-  "main": "index.js",
+  "main": "dist/bundle.js",
+  "jsnext:main": "dist/bundle.es.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify index.js --standalone autoScroll > dist/dom-autoscroller.js",
-    "minify": "browserify index.js -d -p [minifyify --no-map] --standalone autoScroll > dist/dom-autoscroller.min.js",
-    "gadd": "git add dist",
-    "lint": "jshint .",
-    "validate": "npm ls"
+    "build": "node ./rollit"
   },
   "pre-commit": [
     "build",
@@ -29,10 +26,15 @@
     "create-point-cb": "^1.0.0"
   },
   "devDependencies": {
-    "browserify": "^13.0.1",
-    "dragula": "^3.5.4",
+    "babel-preset-es2015-rollup": "^1.2.0",
+    "dragula": "^3.7.2",
     "minifyify": "^7.3.3",
-    "precommit-hook": "^3.0.0"
+    "precommit-hook": "^3.0.0",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^5.0.5",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-uglify": "^1.0.1",
+    "uglify-js": "^2.7.4"
   },
   "repository": {
     "type": "git",

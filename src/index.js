@@ -1,11 +1,6 @@
-var createPointCB = require('create-point-cb');
+import createPointCB from 'create-point-cb';
 
-/*
-git remote add origin https://github.com/hollowdoor/dom_autoscroller.git
-git push -u origin master
-*/
-
-var requestFrame = (function(){
+const requestFrame = (function(){
     if(requestAnimationFrame){
         return requestAnimationFrame;
     }else{
@@ -15,7 +10,7 @@ var requestFrame = (function(){
     }
 }());
 
-var cancelFrame = (function(){
+const cancelFrame = (function(){
     if(cancelAnimationFrame){
         return cancelAnimationFrame;
     }else{
@@ -23,15 +18,15 @@ var cancelFrame = (function(){
     }
 }());
 
-function AutoScroller(elements, options){
-    var self = this, maxSpeed = 4;
-    options = options || {};
+function AutoScroller(elements, options = {}){
+    const self = this;
+    let maxSpeed = 4;
 
     this.margin = options.margin || -1;
     this.scrolling = false;
     this.scrollWhenOutside = options.scrollWhenOutside || false;
 
-    var point = {}, pointCB = createPointCB(point), down = false;
+    let point = {}, pointCB = createPointCB(point), down = false;
 
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
@@ -41,7 +36,7 @@ function AutoScroller(elements, options){
     }
 
     if(typeof options.autoScroll === 'boolean'){
-        this.autoScroll = options.autoScroll ? function(){return true;} : function(){return false;};
+        this.autoScroll = options.autoScroll ? ()=>true : ()=>false;
     }else if(typeof options.autoScroll === 'undefined'){
         this.autoScroll = function(){return false;};
     }else if(typeof options.autoScroll === 'function'){
@@ -88,7 +83,7 @@ function AutoScroller(elements, options){
         return this;
     };
 
-    var hasWindow = null;
+    let hasWindow = null;
 
     (function(temp){
         elements = [];
@@ -110,7 +105,7 @@ function AutoScroller(elements, options){
         }
     });
 
-    var n = 0, current, animationFrame, started = false;
+    let n = 0, current, animationFrame, started = false;
 
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
@@ -134,7 +129,7 @@ function AutoScroller(elements, options){
 
         if(!self.autoScroll()) return;
         if(!event.target) return;
-        var target = event.target, last;
+        let target = event.target, last;
 
         if(!current || !inside(point, current) && !self.scrollWhenOutside){
             if(!current && target){
@@ -179,25 +174,33 @@ function AutoScroller(elements, options){
     }
 
     function autoScroll(el){
-        var rect = getRect(el), scrollx, scrolly;
+        let rect = getRect(el), scrollx, scrolly;
 
         if(point.x < rect.left + self.margin){
-            scrollx = Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed;
+            scrollx = Math.floor(
+                Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed
+            );
         }else if(point.x > rect.right - self.margin){
-            scrollx = Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed;
+            scrollx = Math.ceil(
+                Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed
+            );
         }else{
             scrollx = 0;
         }
 
         if(point.y < rect.top + self.margin){
-            scrolly = Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed;
+            scrolly = Math.floor(
+                Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed
+            );
         }else if(point.y > rect.bottom - self.margin){
-            scrolly = Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed;
+            scrolly = Math.ceil(
+                Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed
+            );
         }else{
             scrolly = 0;
         }
 
-        setTimeout(function(){
+        setTimeout(()=>{
 
             if(scrolly){
                 scrollY(el, scrolly);
@@ -230,9 +233,9 @@ function AutoScroller(elements, options){
 
 }
 
-module.exports = function AutoScrollerFactory(element, options){
+export default function AutoScrollerFactory(element, options){
     return new AutoScroller(element, options);
-};
+}
 
 function getRect(el){
     if(el === window){
@@ -260,3 +263,8 @@ function inside(point, el, rect){
     return (point.y > rect.top && point.y < rect.bottom &&
             point.x > rect.left && point.x < rect.right);
 }
+
+/*
+git remote add origin https://github.com/hollowdoor/dom_autoscroller.git
+git push -u origin master
+*/
