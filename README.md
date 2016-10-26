@@ -1,6 +1,21 @@
 dom-autoscroller
 ================
 
+Big Announcement!
+-----------------
+
+Version 2 of dom-autoscroller is out. You can upgrade to version 2.
+
+Here are the differences.
+
+-	**pixels option removed.**
+-	maxSpeed option added.
+-	Slightly different algorithm for scrolling
+-	Scrolling speed changes dynamically based on distance from element edge
+-	Compatibility with rollup.
+
+Scrolling in dom-autoscroller is now much smoother. So you should upgrade to version 2.
+
 Install
 -------
 
@@ -30,7 +45,7 @@ var scroll = autoScroll([
         document.querySelector('#container2')
     ],{
     margin: 20,
-    pixels: 5,
+    maxSpeed: 5,
     scrollWhenOutside: true,
     autoScroll: function(){
         //Only scroll when the pointer is down, and there is a child being dragged.
@@ -148,9 +163,24 @@ A callback function used to determine if the element should scroll, or when the 
 
 Return a boolean value from this function to allow scrolling.
 
+#### options.maxSpeed = Integer
+
+`maxSpeed` defaults to 4.
+
+Speed effects in dom-autoscroller:
+
+1.	Speed adjusts dynamically depending on how close to the edge your pointer is.
+2.	Speed is pixels per frame.
+
+`maxSpeed` limits pixels per frame.
+
 #### options.pixels = Integer
 
+**removed in version 2**
+
 Set how many pixels per second you want to scroll during the auto scrolling action. More is smoother.
+
+Speed was **pixels/second** in version 1, and in version 2 speed is **pixels/frame**.
 
 #### options.scrollWhenOutside = Boolean
 
@@ -177,6 +207,22 @@ The function you set in the constructor options for `options.autoScroll`.
 ### destroy
 
 Remove all event listeners needed to be able track the pointer.
+
+Undocumented methods
+--------------------
+
+There are undocumented methods in version 2.
+
+These are:
+
+1.	add()
+2.	remove()
+
+These methods add, or remove elements from dom-autoscroller.
+
+Why are these considered undocumented even though there here in the document? :)
+
+`add`, and `remove` are incomplete, and there is no detailed explanation.
 
 About
 -----
