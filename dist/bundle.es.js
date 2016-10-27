@@ -146,8 +146,6 @@ function AutoScroller(elements) {
 
     function onMouseOut() {
         down = false;
-        //cancelFrame(animationFrame);
-        //cancelFrame(windowAnimationFrame);
     }
 
     function getTarget(target) {

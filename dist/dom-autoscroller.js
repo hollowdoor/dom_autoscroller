@@ -206,8 +206,6 @@ var autoScroll = (function () {
 
         function onMouseOut() {
             down = false;
-            //cancelFrame(animationFrame);
-            //cancelFrame(windowAnimationFrame);
         }
 
         function getTarget(target) {
