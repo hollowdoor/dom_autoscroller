@@ -218,6 +218,9 @@ function AutoScroller(elements) {
 
     function scrollWindow() {
         autoScroll(hasWindow);
+
+        cancelFrame(windowAnimationFrame);
+        windowAnimationFrame = requestFrame(scrollWindow);
     }
 
     function scrollTick() {

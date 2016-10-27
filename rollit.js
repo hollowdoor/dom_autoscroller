@@ -52,7 +52,7 @@ rollup.rollup({
 
         try{
             var result = UglifyJS.minify('dist/dom-autoscroller.js');
-            console.log('result ',result)
+            //console.log('result ',result)
             writeFile('dist/dom-autoscroller.min.js', result.code, onError);
         }catch(e){
             console.log('minify error ', e)

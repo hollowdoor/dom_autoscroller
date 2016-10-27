@@ -278,6 +278,9 @@ var autoScroll = (function () {
 
         function scrollWindow() {
             autoScroll(hasWindow);
+
+            cancelFrame(windowAnimationFrame);
+            windowAnimationFrame = requestFrame(scrollWindow);
         }
 
         function scrollTick() {
