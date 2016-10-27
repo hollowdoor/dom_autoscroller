@@ -192,6 +192,8 @@ var autoScroll = (function () {
         window.addEventListener('mousemove', onMove, false);
         window.addEventListener('touchmove', onMove, false);
 
+        window.addEventListener('mouseleave', onMouseOut, false);
+
         function onDown() {
             down = true;
         }
@@ -199,6 +201,13 @@ var autoScroll = (function () {
         function onUp() {
             down = false;
             cancelFrame(animationFrame);
+            cancelFrame(windowAnimationFrame);
+        }
+
+        function onMouseOut() {
+            down = false;
+            //cancelFrame(animationFrame);
+            //cancelFrame(windowAnimationFrame);
         }
 
         function getTarget(target) {

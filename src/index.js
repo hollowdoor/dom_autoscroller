@@ -115,6 +115,8 @@ function AutoScroller(elements, options = {}){
     window.addEventListener('mousemove', onMove, false);
     window.addEventListener('touchmove', onMove, false);
 
+    window.addEventListener('mouseleave', onMouseOut, false);
+
     function onDown(){
         down = true;
     }
@@ -122,6 +124,11 @@ function AutoScroller(elements, options = {}){
     function onUp(){
         down = false;
         cancelFrame(animationFrame);
+        cancelFrame(windowAnimationFrame)
+    }
+
+    function onMouseOut(){
+        down = false;
     }
 
     function getTarget(target){
@@ -161,6 +168,7 @@ function AutoScroller(elements, options = {}){
 
         return underPoint;
     }
+
 
     function onMove(event){
 
