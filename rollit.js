@@ -33,7 +33,13 @@ rollup.rollup({
 
 rollup.rollup({
     entry: 'src/index.js',
-    plugins: [babel()],
+    plugins: [
+        babel(),
+        nodeResolve({
+            main: true
+        }),
+        commonjs()
+    ],
 }).then((bundle)=>{
     let b = bundle.write({
         dest: 'dist/dom-autoscroller.js',
