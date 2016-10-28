@@ -1,6 +1,6 @@
 {
   "name": "dom-autoscroller",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Auto scroll dom elements",
   "main": "dist/bundle.js",
   "jsnext:main": "dist/bundle.es.js",
