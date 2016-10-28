@@ -193,21 +193,31 @@ function AutoScroller(elements) {
             body = document.body;
 
         if (current && !inside(point, current)) {
-            current = null;
+            if (!self.scrollWhenOutside) {
+                current = null;
+            }
         }
 
         if (target && target.parentNode === body) {
             //The special condition to improve speed.
-            current = getElementUnderPoint();
+            target = getElementUnderPoint();
         } else {
             target = getTarget(target);
 
-            if (target) {
+            if (!target) {
+                target = getElementUnderPoint();
+            }
+            /*if(target){
                 current = target;
-            } else {
+            }else{
                 //The target might have still been moved.
                 current = getElementUnderPoint();
-            }
+            }*/
+        }
+
+        //current = target;
+        if (target && target !== current) {
+            current = target;
         }
 
         if (hasWindow) {
