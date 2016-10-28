@@ -82,10 +82,11 @@ var autoScroll = (function () {
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var self = this;
-        var maxSpeed = 4;
+        var maxSpeed = 4,
+            scrolling = false;
 
         this.margin = options.margin || -1;
-        this.scrolling = false;
+        //this.scrolling = false;
         this.scrollWhenOutside = options.scrollWhenOutside || false;
 
         var point = {},
@@ -120,6 +121,8 @@ var autoScroll = (function () {
             window.removeEventListener('touchstart', onDown, false);
             window.removeEventListener('mouseup', onUp, false);
             window.removeEventListener('touchend', onUp, false);
+
+            window.removeEventListener('scroll', setScroll, true);
             elements = [];
         };
 
@@ -177,6 +180,16 @@ var autoScroll = (function () {
                 get: function get() {
                     return maxSpeed;
                 }
+            },
+            point: {
+                get: function get() {
+                    return point;
+                }
+            },
+            scrolling: {
+                get: function get() {
+                    return scrolling;
+                }
             }
         });
 
@@ -193,6 +206,24 @@ var autoScroll = (function () {
         window.addEventListener('touchmove', onMove, false);
 
         window.addEventListener('mouseleave', onMouseOut, false);
+
+        window.addEventListener('scroll', setScroll, true);
+
+        function setScroll(e) {
+
+            for (var i = 0; i < elements.length; i++) {
+                if (elements[i] === e.target) {
+                    scrolling = true;
+                    break;
+                }
+            }
+
+            if (scrolling) {
+                requestAnimationFrame(function () {
+                    return scrolling = false;
+                });
+            }
+        }
 
         function onDown() {
             down = true;
@@ -267,15 +298,8 @@ var autoScroll = (function () {
                 if (!target) {
                     target = getElementUnderPoint();
                 }
-                /*if(target){
-                    current = target;
-                }else{
-                    //The target might have still been moved.
-                    current = getElementUnderPoint();
-                }*/
             }
 
-            //current = target;
             if (target && target !== current) {
                 current = target;
             }
@@ -349,7 +373,6 @@ var autoScroll = (function () {
             if (el === window) {
                 window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
             } else {
-                //el.scrollTop = el.scrollTop + amount;
                 el.scrollTop += amount;
             }
         }
@@ -358,7 +381,6 @@ var autoScroll = (function () {
             if (el === window) {
                 window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
             } else {
-                //el.scrollLeft = el.scrollLeft + amount;
                 el.scrollLeft += amount;
             }
         }

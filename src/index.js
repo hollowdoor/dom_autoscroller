@@ -20,10 +20,10 @@ const cancelFrame = (function(){
 
 function AutoScroller(elements, options = {}){
     const self = this;
-    let maxSpeed = 4;
+    let maxSpeed = 4, scrolling = false;
 
     this.margin = options.margin || -1;
-    this.scrolling = false;
+    //this.scrolling = false;
     this.scrollWhenOutside = options.scrollWhenOutside || false;
 
     let point = {}, pointCB = createPointCB(point), down = false;
@@ -50,6 +50,8 @@ function AutoScroller(elements, options = {}){
         window.removeEventListener('touchstart', onDown, false);
         window.removeEventListener('mouseup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
+
+        window.removeEventListener('scroll', setScroll, true);
         elements = [];
     };
 
@@ -102,6 +104,12 @@ function AutoScroller(elements, options = {}){
         },
         maxSpeed: {
             get: function(){ return maxSpeed; }
+        },
+        point: {
+            get: function(){ return point; }
+        },
+        scrolling: {
+            get: function(){ return scrolling; }
         }
     });
 
@@ -116,6 +124,22 @@ function AutoScroller(elements, options = {}){
     window.addEventListener('touchmove', onMove, false);
 
     window.addEventListener('mouseleave', onMouseOut, false);
+
+    window.addEventListener('scroll', setScroll, true);
+
+    function setScroll(e){
+
+        for(let i=0; i<elements.length; i++){
+            if(elements[i] === e.target){
+                scrolling = true;
+                break;
+            }
+        }
+
+        if(scrolling){
+            requestAnimationFrame(()=>scrolling = false)
+        }
+    }
 
     function onDown(){
         down = true;
@@ -190,16 +214,9 @@ function AutoScroller(elements, options = {}){
             if(!target){
                 target = getElementUnderPoint();
             }
-            /*if(target){
-                current = target;
-            }else{
-                //The target might have still been moved.
-                current = getElementUnderPoint();
-            }*/
         }
 
 
-        //current = target;
         if(target && target !== current){
             current = target;
         }
@@ -237,6 +254,7 @@ function AutoScroller(elements, options = {}){
         animationFrame = requestFrame(scrollTick);
 
     }
+
 
     function autoScroll(el){
         let rect = getRect(el), scrollx, scrolly;
@@ -282,7 +300,6 @@ function AutoScroller(elements, options = {}){
         if(el === window){
             window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
         }else{
-            //el.scrollTop = el.scrollTop + amount;
             el.scrollTop += amount;
         }
     }
@@ -291,7 +308,6 @@ function AutoScroller(elements, options = {}){
         if(el === window){
             window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
         }else{
-            //el.scrollLeft = el.scrollLeft + amount;
             el.scrollLeft += amount;
         }
     }

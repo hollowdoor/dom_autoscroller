@@ -195,7 +195,13 @@ Auto Scroller Properties
 
 Is the pointer down?
 
+### scrolling = Boolean
+
+Is one of the elements scrolling?
+
 ### point = Object
+
+**This reference no longer exists.**
 
 A reference to the [pointer](https://github.com/hollowdoor/pointer_point) object.
 
