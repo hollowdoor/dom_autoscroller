@@ -99,6 +99,10 @@ function AutoScroller(elements) {
     var hasWindow = null,
         windowAnimationFrame = void 0;
 
+    if (Object.prototype.toString.call(elements) !== '[object Array]') {
+        elements = [elements];
+    }
+
     (function (temp) {
         elements = [];
         temp.forEach(function (element) {
