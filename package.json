@@ -21,7 +21,9 @@
   "author": "Quentin Engles <hollowdoor99@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "create-point-cb": "^1.0.0"
+    "animation-frame-polyfill": "^1.0.0",
+    "create-point-cb": "^1.0.0",
+    "type-func": "^1.0.1"
   },
   "devDependencies": {
     "babel-preset-es2015-rollup": "^1.2.0",

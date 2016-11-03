@@ -1,22 +1,24 @@
 import createPointCB from 'create-point-cb';
+import { boolean } from 'type-func';
+import { requestAnimationFrame as requestAnimationFrame$1, cancelAnimationFrame } from 'animation-frame-polyfill';
 
-var requestFrame = function () {
-    if (requestAnimationFrame) {
+/*const requestFrame = (function(){
+    if(requestAnimationFrame){
         return requestAnimationFrame;
-    } else {
-        return function (fn) {
+    }else{
+        return function(fn){
             return setTimeout(fn);
         };
     }
-}();
+}());
 
-var cancelFrame = function () {
-    if (cancelAnimationFrame) {
+const cancelFrame = (function(){
+    if(cancelAnimationFrame){
         return cancelAnimationFrame;
-    } else {
+    }else{
         return clearTimeout;
     }
-}();
+}());*/
 
 function AutoScroller(elements) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -40,19 +42,7 @@ function AutoScroller(elements) {
         maxSpeed = options.maxSpeed;
     }
 
-    if (typeof options.autoScroll === 'boolean') {
-        this.autoScroll = options.autoScroll ? function () {
-            return true;
-        } : function () {
-            return false;
-        };
-    } else if (typeof options.autoScroll === 'undefined') {
-        this.autoScroll = function () {
-            return false;
-        };
-    } else if (typeof options.autoScroll === 'function') {
-        this.autoScroll = options.autoScroll;
-    }
+    this.autoScroll = boolean(options.autoScroll);
 
     this.destroy = function () {
         window.removeEventListener('mousemove', pointCB, false);
@@ -175,8 +165,8 @@ function AutoScroller(elements) {
 
     function onUp() {
         down = false;
-        cancelFrame(animationFrame);
-        cancelFrame(windowAnimationFrame);
+        cancelAnimationFrame(animationFrame);
+        cancelAnimationFrame(windowAnimationFrame);
     }
 
     function onMouseOut() {
@@ -249,23 +239,23 @@ function AutoScroller(elements) {
         }
 
         if (hasWindow) {
-            cancelFrame(windowAnimationFrame);
-            windowAnimationFrame = requestFrame(scrollWindow);
+            cancelAnimationFrame(windowAnimationFrame);
+            windowAnimationFrame = requestAnimationFrame$1(scrollWindow);
         }
 
         if (!current) {
             return;
         }
 
-        cancelFrame(animationFrame);
-        animationFrame = requestFrame(scrollTick);
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame$1(scrollTick);
     }
 
     function scrollWindow() {
         autoScroll(hasWindow);
 
-        cancelFrame(windowAnimationFrame);
-        windowAnimationFrame = requestFrame(scrollWindow);
+        cancelAnimationFrame(windowAnimationFrame);
+        windowAnimationFrame = requestAnimationFrame$1(scrollWindow);
     }
 
     function scrollTick() {
@@ -276,8 +266,8 @@ function AutoScroller(elements) {
 
         autoScroll(current);
 
-        cancelFrame(animationFrame);
-        animationFrame = requestFrame(scrollTick);
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame$1(scrollTick);
     }
 
     function autoScroll(el) {

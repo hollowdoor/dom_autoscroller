@@ -3,24 +3,26 @@
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var createPointCB = _interopDefault(require('create-point-cb'));
+var typeFunc = require('type-func');
+var animationFramePolyfill = require('animation-frame-polyfill');
 
-var requestFrame = function () {
-    if (requestAnimationFrame) {
+/*const requestFrame = (function(){
+    if(requestAnimationFrame){
         return requestAnimationFrame;
-    } else {
-        return function (fn) {
+    }else{
+        return function(fn){
             return setTimeout(fn);
         };
     }
-}();
+}());
 
-var cancelFrame = function () {
-    if (cancelAnimationFrame) {
+const cancelFrame = (function(){
+    if(cancelAnimationFrame){
         return cancelAnimationFrame;
-    } else {
+    }else{
         return clearTimeout;
     }
-}();
+}());*/
 
 function AutoScroller(elements) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -44,19 +46,7 @@ function AutoScroller(elements) {
         maxSpeed = options.maxSpeed;
     }
 
-    if (typeof options.autoScroll === 'boolean') {
-        this.autoScroll = options.autoScroll ? function () {
-            return true;
-        } : function () {
-            return false;
-        };
-    } else if (typeof options.autoScroll === 'undefined') {
-        this.autoScroll = function () {
-            return false;
-        };
-    } else if (typeof options.autoScroll === 'function') {
-        this.autoScroll = options.autoScroll;
-    }
+    this.autoScroll = typeFunc.boolean(options.autoScroll);
 
     this.destroy = function () {
         window.removeEventListener('mousemove', pointCB, false);
@@ -179,8 +169,8 @@ function AutoScroller(elements) {
 
     function onUp() {
         down = false;
-        cancelFrame(animationFrame);
-        cancelFrame(windowAnimationFrame);
+        animationFramePolyfill.cancelAnimationFrame(animationFrame);
+        animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
     }
 
     function onMouseOut() {
@@ -253,23 +243,23 @@ function AutoScroller(elements) {
         }
 
         if (hasWindow) {
-            cancelFrame(windowAnimationFrame);
-            windowAnimationFrame = requestFrame(scrollWindow);
+            animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
+            windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
         }
 
         if (!current) {
             return;
         }
 
-        cancelFrame(animationFrame);
-        animationFrame = requestFrame(scrollTick);
+        animationFramePolyfill.cancelAnimationFrame(animationFrame);
+        animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
     }
 
     function scrollWindow() {
         autoScroll(hasWindow);
 
-        cancelFrame(windowAnimationFrame);
-        windowAnimationFrame = requestFrame(scrollWindow);
+        animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
+        windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
     }
 
     function scrollTick() {
@@ -280,8 +270,8 @@ function AutoScroller(elements) {
 
         autoScroll(current);
 
-        cancelFrame(animationFrame);
-        animationFrame = requestFrame(scrollTick);
+        animationFramePolyfill.cancelAnimationFrame(animationFrame);
+        animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
     }
 
     function autoScroll(el) {

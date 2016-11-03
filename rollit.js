@@ -27,7 +27,7 @@ rollup.rollup({
         format: 'es',
         sourceMap: true
     });
-});
+}).catch(onErrorCB('bundle'));
 
 
 
@@ -36,6 +36,7 @@ rollup.rollup({
     plugins: [
         babel(),
         nodeResolve({
+            jsnext: true,
             main: true
         }),
         commonjs()
@@ -53,13 +54,13 @@ rollup.rollup({
         try{
             var result = UglifyJS.minify('dist/dom-autoscroller.js');
             //console.log('result ',result)
-            writeFile('dist/dom-autoscroller.min.js', result.code, onError);
+            writeFile('dist/dom-autoscroller.min.js', result.code, onErrorCB('minify'));
         }catch(e){
             console.log('minify error ', e)
         }
 
     })
-}).catch(onError);
+}).catch(onErrorCB('script sources'));
 
 rollup.rollup({
     entry: 'test/src.js',
@@ -78,8 +79,15 @@ rollup.rollup({
         sourceMap: true,
         moduleName: 'autoScroll'
     });
-}).catch(onError);
+}).catch(onErrorCB('test code'));
 
-function onError(e){
-    if(e) console.log(e);
+function onErrorCB(message){
+    return function(e){
+        if(e){
+            if(message)
+                console.log(message);
+            console.log(e);
+            console.log(e.stack);
+        }
+    };
 }

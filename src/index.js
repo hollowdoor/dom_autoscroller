@@ -1,22 +1,9 @@
 import createPointCB from 'create-point-cb';
-
-const requestFrame = (function(){
-    if(requestAnimationFrame){
-        return requestAnimationFrame;
-    }else{
-        return function(fn){
-            return setTimeout(fn);
-        };
-    }
-}());
-
-const cancelFrame = (function(){
-    if(cancelAnimationFrame){
-        return cancelAnimationFrame;
-    }else{
-        return clearTimeout;
-    }
-}());
+import {boolean} from 'type-func';
+import {
+    requestAnimationFrame as requestFrame,
+    cancelAnimationFrame as cancelFrame
+} from 'animation-frame-polyfill';
 
 function AutoScroller(elements, options = {}){
     const self = this;
@@ -35,13 +22,7 @@ function AutoScroller(elements, options = {}){
         maxSpeed = options.maxSpeed;
     }
 
-    if(typeof options.autoScroll === 'boolean'){
-        this.autoScroll = options.autoScroll ? ()=>true : ()=>false;
-    }else if(typeof options.autoScroll === 'undefined'){
-        this.autoScroll = function(){return false;};
-    }else if(typeof options.autoScroll === 'function'){
-        this.autoScroll = options.autoScroll;
-    }
+    this.autoScroll = boolean(options.autoScroll);
 
     this.destroy = function() {
         window.removeEventListener('mousemove', pointCB, false);
