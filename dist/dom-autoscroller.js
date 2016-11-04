@@ -1,7 +1,157 @@
 var autoScroll = (function () {
   'use strict';
 
-  var index = function createPointCB(object) {
+  function getDef(f, d) {
+      if (typeof f === 'undefined') {
+          return typeof d === 'undefined' ? f : d;
+      }
+
+      return f;
+  }
+  function boolean(func, def) {
+
+      func = getDef(func, def);
+
+      if (typeof func === 'function') {
+          return function f() {
+              for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+                  args[_key] = arguments[_key];
+              }
+
+              return !!func.apply(this, args);
+          };
+      }
+
+      return !!func ? function () {
+          return true;
+      } : function () {
+          return false;
+      };
+  }
+
+  var prefix = ['webkit', 'moz', 'ms', 'o'];
+
+  var requestAnimationFrame = function () {
+
+    for (var i = 0, limit = prefix.length; i < limit && !window.requestAnimationFrame; ++i) {
+      window.requestAnimationFrame = window[prefix[i] + 'RequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame) {
+      (function () {
+        var lastTime = 0;
+
+        window.requestAnimationFrame = function (callback) {
+          var now = new Date().getTime();
+          var ttc = Math.max(0, 16 - now - lastTime);
+          var timer = window.setTimeout(function () {
+            return callback(now + ttc);
+          }, ttc);
+
+          lastTime = now + ttc;
+
+          return timer;
+        };
+      })();
+    }
+
+    return window.requestAnimationFrame.bind(window);
+  }();
+
+  var cancelAnimationFrame = function () {
+
+    for (var i = 0, limit = prefix.length; i < limit && !window.cancelAnimationFrame; ++i) {
+      window.cancelAnimationFrame = window[prefix[i] + 'CancelAnimationFrame'] || window[prefix[i] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.cancelAnimationFrame) {
+      window.cancelAnimationFrame = function (timer) {
+        window.clearTimeout(timer);
+      };
+    }
+
+    return window.cancelAnimationFrame.bind(window);
+  }();
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+  };
+
+  /**
+   * Returns `true` if provided input is Element.
+   * @name isElement
+   * @param {*} [input]
+   * @returns {boolean}
+   */
+  function isElement (input) {
+    return input != null && (typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object' && input.nodeType === 1 && _typeof(input.style) === 'object' && _typeof(input.ownerDocument) === 'object';
+  }
+
+  function indexOfElement(elements, element) {
+      element = resolveElement(element, true);
+      if (!isElement(element)) return -1;
+      for (var i = 0; i < elements.length; i++) {
+          if (elements[i] === element) {
+              return i;
+          }
+      }
+      return -1;
+  }
+
+  function hasElement(elements, element) {
+      return -1 !== indexOfElement(elements, element);
+  }
+
+  function pushElements(elements, toAdd) {
+
+      for (var i = 0; i < toAdd.length; i++) {
+          if (!hasElement(elements, toAdd[i])) elements.push(toAdd[i]);
+      }
+
+      return toAdd;
+  }
+
+  function addElements(elements) {
+      for (var _len2 = arguments.length, toAdd = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+          toAdd[_key2 - 1] = arguments[_key2];
+      }
+
+      toAdd = toAdd.map(resolveElement);
+      return pushElements(elements, toAdd);
+  }
+
+  function removeElements(elements) {
+      for (var _len3 = arguments.length, toRemove = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+          toRemove[_key3 - 1] = arguments[_key3];
+      }
+
+      return toRemove.map(resolveElement).reduce(function (last, e) {
+
+          var index = indexOfElement(elements, e);
+
+          if (index !== -1) return last.concat(elements.splice(index, 1));
+          return last;
+      }, []);
+  }
+
+  function resolveElement(element, noThrow) {
+      if (typeof element === 'string') {
+          try {
+              return document.querySelector(element);
+          } catch (e) {
+              throw e;
+          }
+      }
+
+      if (!isElement(element) && !noThrow) {
+          throw new TypeError(element + ' is not a DOM element.');
+      }
+      return element;
+  }
+
+  var index$2 = function createPointCB(object) {
 
       // A persistent object (as opposed to returned object) is used to save memory
       // This is good to prevent layout thrashing, or for games, and such
@@ -60,95 +210,48 @@ var autoScroll = (function () {
       //NOTE Remember accessibility, Aria roles, and labels.
   };
 
-  function getDef(f, d) {
-      if (typeof f === 'undefined') {
-          return typeof d === 'undefined' ? f : d;
+  function createWindowRect() {
+      var props = {
+          top: { value: 0, enumerable: true },
+          left: { value: 0, enumerable: true },
+          right: { value: window.innerWidth, enumerable: true },
+          bottom: { value: window.innerHeight, enumerable: true },
+          width: { value: window.innerWidth, enumerable: true },
+          height: { value: window.innerHeight, enumerable: true },
+          x: { value: 0, enumerable: true },
+          y: { value: 0, enumerable: true }
+      };
+
+      if (Object.create) {
+          return Object.create({}, props);
+      } else {
+          var rect = {};
+          Object.defineProperties(rect, props);
+          return rect;
       }
-
-      return f;
   }
-  function boolean(func, def) {
 
-      func = getDef(func, def);
-
-      if (typeof func === 'function') {
-          return function f() {
-              for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-                  args[_key] = arguments[_key];
+  function getClientRect(el) {
+      if (el === window) {
+          return createWindowRect();
+      } else {
+          try {
+              var rect = el.getBoundingClientRect();
+              if (rect.x === undefined) {
+                  rext.x = rect.left;
+                  rect.y = rect.top;
               }
-
-              return !!func.apply(this, args);
-          };
+              return rect;
+          } catch (e) {
+              throw new TypeError("Can't call getBoundingClientRect on " + el);
+          }
       }
-
-      return !!func ? function () {
-          return true;
-      } : function () {
-          return false;
-      };
   }
 
-  var prefix = ['webkit', 'moz', 'ms', 'o'];
-
-  var requestAnimationFrame$1 = function () {
-
-    for (var i = 0, limit = prefix.length; i < limit && !window.requestAnimationFrame; ++i) {
-      window.requestAnimationFrame = window[prefix[i] + 'RequestAnimationFrame'];
-    }
-
-    if (!window.requestAnimationFrame) {
-      (function () {
-        var lastTime = 0;
-
-        window.requestAnimationFrame = function (callback) {
-          var now = new Date().getTime();
-          var ttc = Math.max(0, 16 - now - lastTime);
-          var timer = window.setTimeout(function () {
-            return callback(now + ttc);
-          }, ttc);
-
-          lastTime = now + ttc;
-
-          return timer;
-        };
-      })();
-    }
-
-    return window.requestAnimationFrame.bind(window);
-  }();
-
-  var cancelAnimationFrame = function () {
-
-    for (var i = 0, limit = prefix.length; i < limit && !window.cancelAnimationFrame; ++i) {
-      window.cancelAnimationFrame = window[prefix[i] + 'CancelAnimationFrame'] || window[prefix[i] + 'CancelRequestAnimationFrame'];
-    }
-
-    if (!window.cancelAnimationFrame) {
-      window.cancelAnimationFrame = function (timer) {
-        window.clearTimeout(timer);
-      };
-    }
-
-    return window.cancelAnimationFrame.bind(window);
-  }();
-
-  /*const requestFrame = (function(){
-      if(requestAnimationFrame){
-          return requestAnimationFrame;
-      }else{
-          return function(fn){
-              return setTimeout(fn);
-          };
-      }
-  }());
-
-  const cancelFrame = (function(){
-      if(cancelAnimationFrame){
-          return cancelAnimationFrame;
-      }else{
-          return clearTimeout;
-      }
-  }());*/
+  function pointInside(point, el) {
+      var rect = getClientRect(el);
+      return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
+  }
 
   function AutoScroller(elements) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -162,7 +265,7 @@ var autoScroll = (function () {
       this.scrollWhenOutside = options.scrollWhenOutside || false;
 
       var point = {},
-          pointCB = index(point),
+          pointCB = index$2(point),
           down = false;
 
       window.addEventListener('mousemove', pointCB, false);
@@ -186,34 +289,21 @@ var autoScroll = (function () {
           elements = [];
       };
 
-      function getElement(element) {
-          if (typeof element === 'string') {
-              return document.querySelector(element);
-          }
-          return element;
-      }
-
-      this.add = function (element) {
-          element = getElement(element);
-
-          for (var i = 0; i < elements.length; i++) {
-              if (elements[i] === element) return this;
+      this.add = function () {
+          for (var _len = arguments.length, element = Array(_len), _key = 0; _key < _len; _key++) {
+              element[_key] = arguments[_key];
           }
 
-          elements.push(element);
+          addElements.apply(undefined, [elements].concat(element));
           return this;
       };
 
-      this.remove = function (element) {
-          element = getElement(element);
-
-          for (var i = 0; i < elements.length; i++) {
-              if (element === elements[i]) {
-                  elements.splice(i, 1);
-                  return this;
-              }
+      this.remove = function () {
+          for (var _len2 = arguments.length, element = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+              element[_key2] = arguments[_key2];
           }
-          return this;
+
+          return removeElements.apply(undefined, [elements].concat(element));
       };
 
       var hasWindow = null,
@@ -312,17 +402,13 @@ var autoScroll = (function () {
               return target;
           }
 
-          for (var i = 0; i < elements.length; i++) {
-              if (elements[i] === target) {
-                  return target;
-              }
+          if (hasElement(elements, target)) {
+              return target;
           }
 
           while (target = target.parentNode) {
-              for (var i = 0; i < elements.length; i++) {
-                  if (elements[i] === target) {
-                      return target;
-                  }
+              if (hasElement(elements, target)) {
+                  return target;
               }
           }
 
@@ -370,7 +456,7 @@ var autoScroll = (function () {
 
           if (hasWindow) {
               cancelAnimationFrame(windowAnimationFrame);
-              windowAnimationFrame = requestAnimationFrame$1(scrollWindow);
+              windowAnimationFrame = requestAnimationFrame(scrollWindow);
           }
 
           if (!current) {
@@ -378,14 +464,14 @@ var autoScroll = (function () {
           }
 
           cancelAnimationFrame(animationFrame);
-          animationFrame = requestAnimationFrame$1(scrollTick);
+          animationFrame = requestAnimationFrame(scrollTick);
       }
 
       function scrollWindow() {
           autoScroll(hasWindow);
 
           cancelAnimationFrame(windowAnimationFrame);
-          windowAnimationFrame = requestAnimationFrame$1(scrollWindow);
+          windowAnimationFrame = requestAnimationFrame(scrollWindow);
       }
 
       function scrollTick() {
@@ -397,11 +483,11 @@ var autoScroll = (function () {
           autoScroll(current);
 
           cancelAnimationFrame(animationFrame);
-          animationFrame = requestAnimationFrame$1(scrollTick);
+          animationFrame = requestAnimationFrame(scrollTick);
       }
 
       function autoScroll(el) {
-          var rect = getRect(el),
+          var rect = getClientRect(el),
               scrollx = void 0,
               scrolly = void 0;
 
@@ -453,9 +539,15 @@ var autoScroll = (function () {
   function AutoScrollerFactory(element, options) {
       return new AutoScroller(element, options);
   }
-
-  function getRect(el) {
-      if (el === window) {
+  function inside(point, el, rect) {
+      if (!rect) {
+          return pointInside(point, el);
+      } else {
+          return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
+      }
+  }
+  /*function getRect(el){
+      if(el === window){
           return {
               top: 0,
               left: 0,
@@ -464,19 +556,22 @@ var autoScroll = (function () {
               width: window.innerWidth,
               height: window.innerHeight
           };
-      } else {
-          try {
+
+      }else{
+          try{
               return el.getBoundingClientRect();
-          } catch (e) {
-              throw new TypeError("Can't call getBoundingClientRect on " + el);
+          }catch(e){
+              throw new TypeError("Can't call getBoundingClientRect on "+el);
           }
+
       }
   }
 
-  function inside(point, el, rect) {
+  function inside(point, el, rect){
       rect = rect || getRect(el);
-      return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
-  }
+      return (point.y > rect.top && point.y < rect.bottom &&
+              point.x > rect.left && point.x < rect.right);
+  }*/
 
   /*
   git remote add origin https://github.com/hollowdoor/dom_autoscroller.git

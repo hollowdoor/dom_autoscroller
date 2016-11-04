@@ -1,24 +1,7 @@
-import createPointCB from 'create-point-cb';
 import { boolean } from 'type-func';
-import { requestAnimationFrame as requestAnimationFrame$1, cancelAnimationFrame } from 'animation-frame-polyfill';
-
-/*const requestFrame = (function(){
-    if(requestAnimationFrame){
-        return requestAnimationFrame;
-    }else{
-        return function(fn){
-            return setTimeout(fn);
-        };
-    }
-}());
-
-const cancelFrame = (function(){
-    if(cancelAnimationFrame){
-        return cancelAnimationFrame;
-    }else{
-        return clearTimeout;
-    }
-}());*/
+import { requestAnimationFrame, cancelAnimationFrame } from 'animation-frame-polyfill';
+import { hasElement, removeElements, addElements } from 'dom-set';
+import { getClientRect, createPointCB, pointInside } from 'dom-plane';
 
 function AutoScroller(elements) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -56,34 +39,21 @@ function AutoScroller(elements) {
         elements = [];
     };
 
-    function getElement(element) {
-        if (typeof element === 'string') {
-            return document.querySelector(element);
-        }
-        return element;
-    }
-
-    this.add = function (element) {
-        element = getElement(element);
-
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i] === element) return this;
+    this.add = function () {
+        for (var _len = arguments.length, element = Array(_len), _key = 0; _key < _len; _key++) {
+            element[_key] = arguments[_key];
         }
 
-        elements.push(element);
+        addElements.apply(undefined, [elements].concat(element));
         return this;
     };
 
-    this.remove = function (element) {
-        element = getElement(element);
-
-        for (var i = 0; i < elements.length; i++) {
-            if (element === elements[i]) {
-                elements.splice(i, 1);
-                return this;
-            }
+    this.remove = function () {
+        for (var _len2 = arguments.length, element = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            element[_key2] = arguments[_key2];
         }
-        return this;
+
+        return removeElements.apply(undefined, [elements].concat(element));
     };
 
     var hasWindow = null,
@@ -182,17 +152,13 @@ function AutoScroller(elements) {
             return target;
         }
 
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i] === target) {
-                return target;
-            }
+        if (hasElement(elements, target)) {
+            return target;
         }
 
         while (target = target.parentNode) {
-            for (var i = 0; i < elements.length; i++) {
-                if (elements[i] === target) {
-                    return target;
-                }
+            if (hasElement(elements, target)) {
+                return target;
             }
         }
 
@@ -240,7 +206,7 @@ function AutoScroller(elements) {
 
         if (hasWindow) {
             cancelAnimationFrame(windowAnimationFrame);
-            windowAnimationFrame = requestAnimationFrame$1(scrollWindow);
+            windowAnimationFrame = requestAnimationFrame(scrollWindow);
         }
 
         if (!current) {
@@ -248,14 +214,14 @@ function AutoScroller(elements) {
         }
 
         cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame$1(scrollTick);
+        animationFrame = requestAnimationFrame(scrollTick);
     }
 
     function scrollWindow() {
         autoScroll(hasWindow);
 
         cancelAnimationFrame(windowAnimationFrame);
-        windowAnimationFrame = requestAnimationFrame$1(scrollWindow);
+        windowAnimationFrame = requestAnimationFrame(scrollWindow);
     }
 
     function scrollTick() {
@@ -267,11 +233,11 @@ function AutoScroller(elements) {
         autoScroll(current);
 
         cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame$1(scrollTick);
+        animationFrame = requestAnimationFrame(scrollTick);
     }
 
     function autoScroll(el) {
-        var rect = getRect(el),
+        var rect = getClientRect(el),
             scrollx = void 0,
             scrolly = void 0;
 
@@ -323,9 +289,15 @@ function AutoScroller(elements) {
 function AutoScrollerFactory(element, options) {
     return new AutoScroller(element, options);
 }
-
-function getRect(el) {
-    if (el === window) {
+function inside(point, el, rect) {
+    if (!rect) {
+        return pointInside(point, el);
+    } else {
+        return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
+    }
+}
+/*function getRect(el){
+    if(el === window){
         return {
             top: 0,
             left: 0,
@@ -334,19 +306,22 @@ function getRect(el) {
             width: window.innerWidth,
             height: window.innerHeight
         };
-    } else {
-        try {
+
+    }else{
+        try{
             return el.getBoundingClientRect();
-        } catch (e) {
-            throw new TypeError("Can't call getBoundingClientRect on " + el);
+        }catch(e){
+            throw new TypeError("Can't call getBoundingClientRect on "+el);
         }
+
     }
 }
 
-function inside(point, el, rect) {
+function inside(point, el, rect){
     rect = rect || getRect(el);
-    return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
-}
+    return (point.y > rect.top && point.y < rect.bottom &&
+            point.x > rect.left && point.x < rect.right);
+}*/
 
 /*
 git remote add origin https://github.com/hollowdoor/dom_autoscroller.git

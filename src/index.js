@@ -1,9 +1,19 @@
-import createPointCB from 'create-point-cb';
+//import createPointCB from 'create-point-cb';
 import {boolean} from 'type-func';
 import {
     requestAnimationFrame as requestFrame,
     cancelAnimationFrame as cancelFrame
 } from 'animation-frame-polyfill';
+import {
+    hasElement,
+    addElements,
+    removeElements
+} from 'dom-set';
+import {
+    createPointCB,
+    getClientRect as getRect,
+    pointInside
+} from 'dom-plane';
 
 function AutoScroller(elements, options = {}){
     const self = this;
@@ -36,34 +46,13 @@ function AutoScroller(elements, options = {}){
         elements = [];
     };
 
-    function getElement(element){
-        if(typeof element === 'string'){
-            return document.querySelector(element);
-        }
-        return element;
-    }
-
-    this.add = function(element){
-        element = getElement(element);
-
-        for(var i=0; i<elements.length; i++){
-            if(elements[i] === element) return this;
-        }
-
-        elements.push(element);
+    this.add = function(...element){
+        addElements(elements, ...element);
         return this;
     };
 
-    this.remove = function(element){
-        element = getElement(element);
-
-        for(var i=0; i<elements.length; i++){
-            if(element === elements[i]){
-                elements.splice(i, 1);
-                return this;
-            }
-        }
-        return this;
+    this.remove = function(...element){
+        return removeElements(elements, ...element);
     };
 
     let hasWindow = null, windowAnimationFrame;
@@ -122,7 +111,7 @@ function AutoScroller(elements, options = {}){
         }
 
         if(scrolling){
-            requestAnimationFrame(()=>scrolling = false)
+            requestFrame(()=>scrolling = false)
         }
     }
 
@@ -149,17 +138,13 @@ function AutoScroller(elements, options = {}){
             return target;
         }
 
-        for(var i=0; i<elements.length; i++){
-            if(elements[i] === target){
-                return target;
-            }
+        if(hasElement(elements, target)){
+            return target;
         }
 
         while(target = target.parentNode){
-            for(var i=0; i<elements.length; i++){
-                if(elements[i] === target){
-                    return target;
-                }
+            if(hasElement(elements, target)){
+                return target;
             }
         }
 
@@ -302,8 +287,15 @@ function AutoScroller(elements, options = {}){
 export default function AutoScrollerFactory(element, options){
     return new AutoScroller(element, options);
 }
-
-function getRect(el){
+function inside(point, el, rect){
+    if(!rect){
+        return pointInside(point, el);
+    }else{
+        return (point.y > rect.top && point.y < rect.bottom &&
+                point.x > rect.left && point.x < rect.right);
+    }
+}
+/*function getRect(el){
     if(el === window){
         return {
             top: 0,
@@ -328,7 +320,7 @@ function inside(point, el, rect){
     rect = rect || getRect(el);
     return (point.y > rect.top && point.y < rect.bottom &&
             point.x > rect.left && point.x < rect.right);
-}
+}*/
 
 /*
 git remote add origin https://github.com/hollowdoor/dom_autoscroller.git

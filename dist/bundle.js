@@ -1,28 +1,9 @@
 'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var createPointCB = _interopDefault(require('create-point-cb'));
 var typeFunc = require('type-func');
 var animationFramePolyfill = require('animation-frame-polyfill');
-
-/*const requestFrame = (function(){
-    if(requestAnimationFrame){
-        return requestAnimationFrame;
-    }else{
-        return function(fn){
-            return setTimeout(fn);
-        };
-    }
-}());
-
-const cancelFrame = (function(){
-    if(cancelAnimationFrame){
-        return cancelAnimationFrame;
-    }else{
-        return clearTimeout;
-    }
-}());*/
+var domSet = require('dom-set');
+var domPlane = require('dom-plane');
 
 function AutoScroller(elements) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -36,7 +17,7 @@ function AutoScroller(elements) {
     this.scrollWhenOutside = options.scrollWhenOutside || false;
 
     var point = {},
-        pointCB = createPointCB(point),
+        pointCB = domPlane.createPointCB(point),
         down = false;
 
     window.addEventListener('mousemove', pointCB, false);
@@ -60,34 +41,21 @@ function AutoScroller(elements) {
         elements = [];
     };
 
-    function getElement(element) {
-        if (typeof element === 'string') {
-            return document.querySelector(element);
-        }
-        return element;
-    }
-
-    this.add = function (element) {
-        element = getElement(element);
-
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i] === element) return this;
+    this.add = function () {
+        for (var _len = arguments.length, element = Array(_len), _key = 0; _key < _len; _key++) {
+            element[_key] = arguments[_key];
         }
 
-        elements.push(element);
+        domSet.addElements.apply(undefined, [elements].concat(element));
         return this;
     };
 
-    this.remove = function (element) {
-        element = getElement(element);
-
-        for (var i = 0; i < elements.length; i++) {
-            if (element === elements[i]) {
-                elements.splice(i, 1);
-                return this;
-            }
+    this.remove = function () {
+        for (var _len2 = arguments.length, element = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            element[_key2] = arguments[_key2];
         }
-        return this;
+
+        return domSet.removeElements.apply(undefined, [elements].concat(element));
     };
 
     var hasWindow = null,
@@ -157,7 +125,7 @@ function AutoScroller(elements) {
         }
 
         if (scrolling) {
-            requestAnimationFrame(function () {
+            animationFramePolyfill.requestAnimationFrame(function () {
                 return scrolling = false;
             });
         }
@@ -186,17 +154,13 @@ function AutoScroller(elements) {
             return target;
         }
 
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i] === target) {
-                return target;
-            }
+        if (domSet.hasElement(elements, target)) {
+            return target;
         }
 
         while (target = target.parentNode) {
-            for (var i = 0; i < elements.length; i++) {
-                if (elements[i] === target) {
-                    return target;
-                }
+            if (domSet.hasElement(elements, target)) {
+                return target;
             }
         }
 
@@ -275,7 +239,7 @@ function AutoScroller(elements) {
     }
 
     function autoScroll(el) {
-        var rect = getRect(el),
+        var rect = domPlane.getClientRect(el),
             scrollx = void 0,
             scrolly = void 0;
 
@@ -327,9 +291,15 @@ function AutoScroller(elements) {
 function AutoScrollerFactory(element, options) {
     return new AutoScroller(element, options);
 }
-
-function getRect(el) {
-    if (el === window) {
+function inside(point, el, rect) {
+    if (!rect) {
+        return domPlane.pointInside(point, el);
+    } else {
+        return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
+    }
+}
+/*function getRect(el){
+    if(el === window){
         return {
             top: 0,
             left: 0,
@@ -338,19 +308,22 @@ function getRect(el) {
             width: window.innerWidth,
             height: window.innerHeight
         };
-    } else {
-        try {
+
+    }else{
+        try{
             return el.getBoundingClientRect();
-        } catch (e) {
-            throw new TypeError("Can't call getBoundingClientRect on " + el);
+        }catch(e){
+            throw new TypeError("Can't call getBoundingClientRect on "+el);
         }
+
     }
 }
 
-function inside(point, el, rect) {
+function inside(point, el, rect){
     rect = rect || getRect(el);
-    return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
-}
+    return (point.y > rect.top && point.y < rect.bottom &&
+            point.x > rect.left && point.x < rect.right);
+}*/
 
 /*
 git remote add origin https://github.com/hollowdoor/dom_autoscroller.git
