@@ -546,32 +546,6 @@ var autoScroll = (function () {
           return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
       }
   }
-  /*function getRect(el){
-      if(el === window){
-          return {
-              top: 0,
-              left: 0,
-              right: window.innerWidth,
-              bottom: window.innerHeight,
-              width: window.innerWidth,
-              height: window.innerHeight
-          };
-
-      }else{
-          try{
-              return el.getBoundingClientRect();
-          }catch(e){
-              throw new TypeError("Can't call getBoundingClientRect on "+el);
-          }
-
-      }
-  }
-
-  function inside(point, el, rect){
-      rect = rect || getRect(el);
-      return (point.y > rect.top && point.y < rect.bottom &&
-              point.x > rect.left && point.x < rect.right);
-  }*/
 
   /*
   git remote add origin https://github.com/hollowdoor/dom_autoscroller.git
