@@ -8,6 +8,7 @@ import {
     addElements,
     removeElements
 } from 'dom-set';
+
 import {
     createPointCB,
     getClientRect as getRect,

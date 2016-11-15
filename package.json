@@ -23,7 +23,7 @@
   "dependencies": {
     "animation-frame-polyfill": "^1.0.0",
     "create-point-cb": "^1.0.0",
-    "dom-plane": "^1.0.0",
+    "dom-plane": "^1.0.1",
     "dom-set": "^1.0.1",
     "type-func": "^1.0.1"
   },
