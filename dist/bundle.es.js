@@ -1,7 +1,7 @@
 import { boolean } from 'type-func';
-import { requestAnimationFrame, cancelAnimationFrame } from 'animation-frame-polyfill';
-import { hasElement, removeElements, addElements } from 'dom-set';
-import { getClientRect, createPointCB, pointInside } from 'dom-plane';
+import { cancelAnimationFrame, requestAnimationFrame } from 'animation-frame-polyfill';
+import { addElements, hasElement, removeElements } from 'dom-set';
+import { createPointCB, getClientRect, pointInside } from 'dom-plane';
 
 function AutoScroller(elements) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
