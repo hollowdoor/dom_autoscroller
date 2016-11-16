@@ -1,7 +1,7 @@
 dom-autoscroller
 ================
 
-![dom autoscroller](logo.svg)
+![dom autoscroller](logo.png)
 
 The syncMove option and synchronizing move
 ------------------------------------------
