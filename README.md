@@ -30,6 +30,12 @@ Or Download one of these files from the Github repo:
 
 If you use one of these prepackaged files the global name is **autoScroll**.
 
+Demo
+---
+
+[jsfiddle Demo of dom-autoscroller](http://jsfiddle.net/gh/get/library/pure/hollowdoor/dom_autoscroller_demo/tree/master/Demo)
+
+
 Usage
 -----
 
@@ -144,7 +150,6 @@ For clarity here is a more complete example:
 
 If you look at the last example notice the containers have only one child, and that they're different from the containers used by *dragula*. In theory multiple children could work with `dom-autoscroller`, but the children scrolling might interfere with the workings of the library *dragula*.
 
-[jsfiddle Demo of dom-autoscroller](https://jsfiddle.net/hollowdoor/a2or8sez/)
 
 Auto Scroller API
 -----------------
