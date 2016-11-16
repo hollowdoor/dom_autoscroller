@@ -1,9 +1,12 @@
 'use strict';
 
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
 var typeFunc = require('type-func');
 var animationFramePolyfill = require('animation-frame-polyfill');
 var domSet = require('dom-set');
 var domPlane = require('dom-plane');
+var mousemoveDispatcher = _interopDefault(require('dom-mousemove-dispatcher'));
 
 function AutoScroller(elements) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -18,6 +21,7 @@ function AutoScroller(elements) {
 
     var point = {},
         pointCB = domPlane.createPointCB(point),
+        dispatcher = mousemoveDispatcher(),
         down = false;
 
     window.addEventListener('mousemove', pointCB, false);
@@ -28,6 +32,7 @@ function AutoScroller(elements) {
     }
 
     this.autoScroll = typeFunc.boolean(options.autoScroll);
+    this.syncMove = typeFunc.boolean(options.syncMove, false);
 
     this.destroy = function () {
         window.removeEventListener('mousemove', pointCB, false);
@@ -182,6 +187,11 @@ function AutoScroller(elements) {
     function onMove(event) {
 
         if (!self.autoScroll()) return;
+
+        if (event['dispatched']) {
+            return;
+        }
+
         var target = event.target,
             body = document.body;
 
@@ -259,6 +269,21 @@ function AutoScroller(elements) {
             scrolly = 0;
         }
 
+        if (self.syncMove()) {
+            /*
+            Notes about mousemove event dispatch.
+            screen(X/Y) should need to be updated.
+            Some other properties might need to be set.
+            Keep the syncMove option default false until all inconsistencies are taken care of.
+            */
+            dispatcher.dispatch(el, {
+                pageX: point.pageX + scrollx,
+                pageY: point.pageY + scrolly,
+                clientX: point.x + scrollx,
+                clientY: point.y + scrolly
+            });
+        }
+
         setTimeout(function () {
 
             if (scrolly) {
@@ -291,6 +316,7 @@ function AutoScroller(elements) {
 function AutoScrollerFactory(element, options) {
     return new AutoScroller(element, options);
 }
+
 function inside(point, el, rect) {
     if (!rect) {
         return domPlane.pointInside(point, el);

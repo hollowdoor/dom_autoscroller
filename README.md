@@ -1,6 +1,19 @@
 dom-autoscroller
 ================
 
+The syncMove option and synchronizing move
+--------
+
+`dom-autoscroller` has a new option named syncMove.
+
+`syncMove` takes a boolean, or a function that returns a boolean, and the returned value of `syncMove` toggles the event synching of `dom-autoscroller`.
+
+Why do that? There are some situations where `dom-autoscroller` might be doing what it does, but even though the mouse cursor moves relative to the scroll position `mousemove` events do not get fired. When you set `syncMove` to true that allows `mousemove` events with fresh coordinates to be fired for some other source that might need those events.
+
+For now the option `syncMove` is set to false. This is for experimental purposes, and because this functionality is likely to be buggy. `touchmove` syncing is also planned, but it's best if the integration of move syncing be taken slow. Please leave plenty of issues to help integrate `syncMove`, and `mousemove` dispatch into `dom-autoscroller`.
+
+Once movement sync is fully integrated into `dom-autoscroller` the `syncMove` option might be set to default true, or removed entirely. It depends on how things work out down the line.
+
 Big Announcement!
 -----------------
 

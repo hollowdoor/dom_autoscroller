@@ -15,6 +15,8 @@ import {
     pointInside
 } from 'dom-plane';
 
+import mousemoveDispatcher from 'dom-mousemove-dispatcher';
+
 function AutoScroller(elements, options = {}){
     const self = this;
     let maxSpeed = 4, scrolling = false;
@@ -23,7 +25,10 @@ function AutoScroller(elements, options = {}){
     //this.scrolling = false;
     this.scrollWhenOutside = options.scrollWhenOutside || false;
 
-    let point = {}, pointCB = createPointCB(point), down = false;
+    let point = {},
+        pointCB = createPointCB(point),
+        dispatcher = mousemoveDispatcher(),
+        down = false;
 
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
@@ -33,6 +38,7 @@ function AutoScroller(elements, options = {}){
     }
 
     this.autoScroll = boolean(options.autoScroll);
+    this.syncMove = boolean(options.syncMove, false);
 
     this.destroy = function() {
         window.removeEventListener('mousemove', pointCB, false);
@@ -167,6 +173,9 @@ function AutoScroller(elements, options = {}){
     function onMove(event){
 
         if(!self.autoScroll()) return;
+
+        if(event['dispatched']){ return; }
+
         let target = event.target, body = document.body;
 
         if(current && !inside(point, current)){
@@ -253,6 +262,21 @@ function AutoScroller(elements, options = {}){
             scrolly = 0;
         }
 
+        if(self.syncMove()){
+            /*
+            Notes about mousemove event dispatch.
+            screen(X/Y) should need to be updated.
+            Some other properties might need to be set.
+            Keep the syncMove option default false until all inconsistencies are taken care of.
+            */
+            dispatcher.dispatch(el, {
+                pageX: point.pageX + scrollx,
+                pageY: point.pageY + scrolly,
+                clientX: point.x + scrollx,
+                clientY: point.y + scrolly
+            });
+        }
+
         setTimeout(()=>{
 
             if(scrolly){
@@ -287,6 +311,7 @@ function AutoScroller(elements, options = {}){
 export default function AutoScrollerFactory(element, options){
     return new AutoScroller(element, options);
 }
+
 function inside(point, el, rect){
     if(!rect){
         return pointInside(point, el);
