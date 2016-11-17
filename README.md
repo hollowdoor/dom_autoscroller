@@ -34,7 +34,13 @@ Scrolling in dom-autoscroller is now much smoother. So you should upgrade to ver
 Install
 -------
 
+**NPM**
+
 `npm install --save dom-autoscroller`
+
+**BOWER**
+
+`bower install --save dom-autoscroller`
 
 Then use browserify, webpack, or [rollup](https://github.com/rollup/rollup) to build your script.
 
