@@ -1,10 +1,11 @@
 {
   "name": "dom-autoscroller",
-  "version": "1.4.1",
   "description": "Auto scroll dom elements",
   "main": "dist/dom-autoscroller.js",
   "keywords": [
-    "scroll", "scroller", "autoscroll"
+    "scroll",
+    "scroller",
+    "autoscroll"
   ],
   "authors": [
     "Quentin Engles"
