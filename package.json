@@ -33,6 +33,7 @@
     "dragula": "^3.7.2",
     "minifyify": "^7.3.3",
     "precommit-hook": "^3.0.0",
+    "rollup": "^0.41.4",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^5.0.5",
     "rollup-plugin-node-resolve": "^2.0.0",
