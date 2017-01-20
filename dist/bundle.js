@@ -8,12 +8,11 @@ var domSet = require('dom-set');
 var domPlane = require('dom-plane');
 var mousemoveDispatcher = _interopDefault(require('dom-mousemove-dispatcher'));
 
-function AutoScroller(elements) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function AutoScroller(elements, options){
+    if ( options === void 0 ) options = {};
 
     var self = this;
-    var maxSpeed = 4,
-        scrolling = false;
+    var maxSpeed = 4, scrolling = false;
 
     this.margin = options.margin || -1;
     //this.scrolling = false;
@@ -27,14 +26,14 @@ function AutoScroller(elements) {
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
 
-    if (!isNaN(options.maxSpeed)) {
+    if(!isNaN(options.maxSpeed)){
         maxSpeed = options.maxSpeed;
     }
 
     this.autoScroll = typeFunc.boolean(options.autoScroll);
     this.syncMove = typeFunc.boolean(options.syncMove, false);
 
-    this.destroy = function () {
+    this.destroy = function() {
         window.removeEventListener('mousemove', pointCB, false);
         window.removeEventListener('touchmove', pointCB, false);
         window.removeEventListener('mousedown', onDown, false);
@@ -49,67 +48,54 @@ function AutoScroller(elements) {
         elements = [];
     };
 
-    this.add = function () {
-        for (var _len = arguments.length, element = Array(_len), _key = 0; _key < _len; _key++) {
-            element[_key] = arguments[_key];
-        }
+    this.add = function(){
+        var element = [], len = arguments.length;
+        while ( len-- ) element[ len ] = arguments[ len ];
 
-        domSet.addElements.apply(undefined, [elements].concat(element));
+        domSet.addElements.apply(void 0, [ elements ].concat( element ));
         return this;
     };
 
-    this.remove = function () {
-        for (var _len2 = arguments.length, element = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            element[_key2] = arguments[_key2];
-        }
+    this.remove = function(){
+        var element = [], len = arguments.length;
+        while ( len-- ) element[ len ] = arguments[ len ];
 
-        return domSet.removeElements.apply(undefined, [elements].concat(element));
+        return domSet.removeElements.apply(void 0, [ elements ].concat( element ));
     };
 
-    var hasWindow = null,
-        windowAnimationFrame = void 0;
+    var hasWindow = null, windowAnimationFrame;
 
-    if (Object.prototype.toString.call(elements) !== '[object Array]') {
+    if(Object.prototype.toString.call(elements) !== '[object Array]'){
         elements = [elements];
     }
 
-    (function (temp) {
+    (function(temp){
         elements = [];
-        temp.forEach(function (element) {
-            if (element === window) {
+        temp.forEach(function(element){
+            if(element === window){
                 hasWindow = window;
-            } else {
+            }else{
                 self.add(element);
             }
         });
-    })(elements);
+    }(elements));
 
     Object.defineProperties(this, {
         down: {
-            get: function get() {
-                return down;
-            }
+            get: function(){ return down; }
         },
         maxSpeed: {
-            get: function get() {
-                return maxSpeed;
-            }
+            get: function(){ return maxSpeed; }
         },
         point: {
-            get: function get() {
-                return point;
-            }
+            get: function(){ return point; }
         },
         scrolling: {
-            get: function get() {
-                return scrolling;
-            }
+            get: function(){ return scrolling; }
         }
     });
 
-    var n = 0,
-        current = null,
-        animationFrame = void 0;
+    var n = 0, current = null, animationFrame;
 
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
@@ -123,51 +109,49 @@ function AutoScroller(elements) {
 
     window.addEventListener('scroll', setScroll, true);
 
-    function setScroll(e) {
+    function setScroll(e){
 
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i] === e.target) {
+        for(var i=0; i<elements.length; i++){
+            if(elements[i] === e.target){
                 scrolling = true;
                 break;
             }
         }
 
-        if (scrolling) {
-            animationFramePolyfill.requestAnimationFrame(function () {
-                return scrolling = false;
-            });
+        if(scrolling){
+            animationFramePolyfill.requestAnimationFrame(function (){ return scrolling = false; });
         }
     }
 
-    function onDown() {
+    function onDown(){
         down = true;
     }
 
-    function onUp() {
+    function onUp(){
         down = false;
         animationFramePolyfill.cancelAnimationFrame(animationFrame);
         animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
     }
 
-    function onMouseOut() {
+    function onMouseOut(){
         down = false;
     }
 
-    function getTarget(target) {
-        if (!target) {
+    function getTarget(target){
+        if(!target){
             return null;
         }
 
-        if (current === target) {
+        if(current === target){
             return target;
         }
 
-        if (domSet.hasElement(elements, target)) {
+        if(domSet.hasElement(elements, target)){
             return target;
         }
 
-        while (target = target.parentNode) {
-            if (domSet.hasElement(elements, target)) {
+        while(target = target.parentNode){
+            if(domSet.hasElement(elements, target)){
                 return target;
             }
         }
@@ -175,11 +159,11 @@ function AutoScroller(elements) {
         return null;
     }
 
-    function getElementUnderPoint() {
+    function getElementUnderPoint(){
         var underPoint = null;
 
-        for (var i = 0; i < elements.length; i++) {
-            if (inside(point, elements[i])) {
+        for(var i=0; i<elements.length; i++){
+            if(inside(point, elements[i])){
                 underPoint = elements[i];
             }
         }
@@ -187,44 +171,44 @@ function AutoScroller(elements) {
         return underPoint;
     }
 
-    function onMove(event) {
 
-        if (!self.autoScroll()) return;
+    function onMove(event){
 
-        if (event['dispatched']) {
-            return;
-        }
+        if(!self.autoScroll()) { return; }
 
-        var target = event.target,
-            body = document.body;
+        if(event['dispatched']){ return; }
 
-        if (current && !inside(point, current)) {
-            if (!self.scrollWhenOutside) {
+        var target = event.target, body = document.body;
+
+        if(current && !inside(point, current)){
+            if(!self.scrollWhenOutside){
                 current = null;
             }
         }
 
-        if (target && target.parentNode === body) {
+        if(target && target.parentNode === body){
             //The special condition to improve speed.
             target = getElementUnderPoint();
-        } else {
+        }else{
             target = getTarget(target);
 
-            if (!target) {
+            if(!target){
                 target = getElementUnderPoint();
             }
         }
 
-        if (target && target !== current) {
+
+        if(target && target !== current){
             current = target;
         }
 
-        if (hasWindow) {
+        if(hasWindow){
             animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
             windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
         }
 
-        if (!current) {
+
+        if(!current){
             return;
         }
 
@@ -232,16 +216,16 @@ function AutoScroller(elements) {
         animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
     }
 
-    function scrollWindow() {
+    function scrollWindow(){
         autoScroll(hasWindow);
 
         animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
         windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
     }
 
-    function scrollTick() {
+    function scrollTick(){
 
-        if (!current) {
+        if(!current){
             return;
         }
 
@@ -249,30 +233,38 @@ function AutoScroller(elements) {
 
         animationFramePolyfill.cancelAnimationFrame(animationFrame);
         animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
+
     }
 
-    function autoScroll(el) {
-        var rect = domPlane.getClientRect(el),
-            scrollx = void 0,
-            scrolly = void 0;
 
-        if (point.x < rect.left + self.margin) {
-            scrollx = Math.floor(Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed);
-        } else if (point.x > rect.right - self.margin) {
-            scrollx = Math.ceil(Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed);
-        } else {
+    function autoScroll(el){
+        var rect = domPlane.getClientRect(el), scrollx, scrolly;
+
+        if(point.x < rect.left + self.margin){
+            scrollx = Math.floor(
+                Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed
+            );
+        }else if(point.x > rect.right - self.margin){
+            scrollx = Math.ceil(
+                Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed
+            );
+        }else{
             scrollx = 0;
         }
 
-        if (point.y < rect.top + self.margin) {
-            scrolly = Math.floor(Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed);
-        } else if (point.y > rect.bottom - self.margin) {
-            scrolly = Math.ceil(Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed);
-        } else {
+        if(point.y < rect.top + self.margin){
+            scrolly = Math.floor(
+                Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed
+            );
+        }else if(point.y > rect.bottom - self.margin){
+            scrolly = Math.ceil(
+                Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed
+            );
+        }else{
             scrolly = 0;
         }
 
-        if (self.syncMove()) {
+        if(self.syncMove()){
             /*
             Notes about mousemove event dispatch.
             screen(X/Y) should need to be updated.
@@ -287,44 +279,47 @@ function AutoScroller(elements) {
             });
         }
 
-        setTimeout(function () {
+        setTimeout(function (){
 
-            if (scrolly) {
+            if(scrolly){
                 scrollY(el, scrolly);
             }
 
-            if (scrollx) {
+            if(scrollx){
                 scrollX(el, scrollx);
             }
+
         });
     }
 
-    function scrollY(el, amount) {
-        if (el === window) {
+    function scrollY(el, amount){
+        if(el === window){
             window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
-        } else {
+        }else{
             el.scrollTop += amount;
         }
     }
 
-    function scrollX(el, amount) {
-        if (el === window) {
+    function scrollX(el, amount){
+        if(el === window){
             window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
-        } else {
+        }else{
             el.scrollLeft += amount;
         }
     }
+
 }
 
-function AutoScrollerFactory(element, options) {
+function AutoScrollerFactory(element, options){
     return new AutoScroller(element, options);
 }
 
-function inside(point, el, rect) {
-    if (!rect) {
+function inside(point, el, rect){
+    if(!rect){
         return domPlane.pointInside(point, el);
-    } else {
-        return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
+    }else{
+        return (point.y > rect.top && point.y < rect.bottom &&
+                point.x > rect.left && point.x < rect.right);
     }
 }
 

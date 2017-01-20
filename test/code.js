@@ -11,33 +11,25 @@ function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-var atoa$1 = function atoa(a, n) {
-  return Array.prototype.slice.call(a, n);
-};
+var atoa$1 = function atoa (a, n) { return Array.prototype.slice.call(a, n); };
 
 var si = typeof setImmediate === 'function';
 var tick;
 if (si) {
-  tick = function (fn) {
-    setImmediate(fn);
-  };
+  tick = function (fn) { setImmediate(fn); };
 } else if (typeof process !== 'undefined' && process.nextTick) {
   tick = process.nextTick;
 } else {
-  tick = function (fn) {
-    setTimeout(fn, 0);
-  };
+  tick = function (fn) { setTimeout(fn, 0); };
 }
 
 var ticky$1 = tick;
 
 var ticky = ticky$1;
 
-var debounce$1 = function debounce(fn, args, ctx) {
-  if (!fn) {
-    return;
-  }
-  ticky(function run() {
+var debounce$1 = function debounce (fn, args, ctx) {
+  if (!fn) { return; }
+  ticky(function run () {
     fn.apply(ctx || null, args || []);
   });
 };
@@ -45,12 +37,10 @@ var debounce$1 = function debounce(fn, args, ctx) {
 var atoa = atoa$1;
 var debounce = debounce$1;
 
-var emitter$1 = function emitter(thing, options) {
+var emitter$1 = function emitter (thing, options) {
   var opts = options || {};
   var evt = {};
-  if (thing === undefined) {
-    thing = {};
-  }
+  if (thing === undefined) { thing = {}; }
   thing.on = function (type, fn) {
     if (!evt[type]) {
       evt[type] = [fn];
@@ -72,9 +62,7 @@ var emitter$1 = function emitter(thing, options) {
       evt = {};
     } else {
       var et = evt[type];
-      if (!et) {
-        return thing;
-      }
+      if (!et) { return thing; }
       et.splice(et.indexOf(fn), 1);
     }
     return thing;
@@ -88,18 +76,10 @@ var emitter$1 = function emitter(thing, options) {
     return function () {
       var args = atoa(arguments);
       var ctx = this || thing;
-      if (type === 'error' && opts.throws !== false && !et.length) {
-        throw args.length === 1 ? args[0] : args;
-      }
-      et.forEach(function emitter(listen) {
-        if (opts.async) {
-          debounce(listen, args, ctx);
-        } else {
-          listen.apply(ctx, args);
-        }
-        if (listen._once) {
-          thing.off(type, listen);
-        }
+      if (type === 'error' && opts.throws !== false && !et.length) { throw args.length === 1 ? args[0] : args; }
+      et.forEach(function emitter (listen) {
+        if (opts.async) { debounce(listen, args, ctx); } else { listen.apply(ctx, args); }
+        if (listen._once) { thing.off(type, listen); }
       });
       return thing;
     };
@@ -109,11 +89,12 @@ var emitter$1 = function emitter(thing, options) {
 
 var NativeCustomEvent = commonjsGlobal.CustomEvent;
 
-function useNative() {
+function useNative () {
   try {
     var p = new NativeCustomEvent('cat', { detail: { foo: 'bar' } });
-    return 'cat' === p.type && 'bar' === p.detail.foo;
-  } catch (e) {}
+    return  'cat' === p.type && 'bar' === p.detail.foo;
+  } catch (e) {
+  }
   return false;
 }
 
@@ -128,7 +109,7 @@ function useNative() {
 var index = useNative() ? NativeCustomEvent :
 
 // IE >= 9
-'function' === typeof document.createEvent ? function CustomEvent(type, params) {
+'function' === typeof document.createEvent ? function CustomEvent (type, params) {
   var e = document.createEvent('CustomEvent');
   if (params) {
     e.initCustomEvent(type, params.bubbles, params.cancelable, params.detail);
@@ -139,7 +120,7 @@ var index = useNative() ? NativeCustomEvent :
 } :
 
 // IE <= 8
-function CustomEvent(type, params) {
+function CustomEvent (type, params) {
   var e = document.createEventObject();
   e.type = type;
   if (params) {
@@ -184,33 +165,33 @@ var crossvent$1 = {
   fabricate: fabricateEvent
 };
 
-function addEventEasy(el, type, fn, capturing) {
+function addEventEasy (el, type, fn, capturing) {
   return el.addEventListener(type, fn, capturing);
 }
 
-function addEventHard(el, type, fn) {
+function addEventHard (el, type, fn) {
   return el.attachEvent('on' + type, wrap(el, type, fn));
 }
 
-function removeEventEasy(el, type, fn, capturing) {
+function removeEventEasy (el, type, fn, capturing) {
   return el.removeEventListener(type, fn, capturing);
 }
 
-function removeEventHard(el, type, fn) {
+function removeEventHard (el, type, fn) {
   var listener = unwrap(el, type, fn);
   if (listener) {
     return el.detachEvent('on' + type, listener);
   }
 }
 
-function fabricateEvent(el, type, model) {
+function fabricateEvent (el, type, model) {
   var e = eventmap.indexOf(type) === -1 ? makeCustomEvent() : makeClassicEvent();
   if (el.dispatchEvent) {
     el.dispatchEvent(e);
   } else {
     el.fireEvent('on' + type, e);
   }
-  function makeClassicEvent() {
+  function makeClassicEvent () {
     var e;
     if (doc$1.createEvent) {
       e = doc$1.createEvent('Event');
@@ -220,27 +201,23 @@ function fabricateEvent(el, type, model) {
     }
     return e;
   }
-  function makeCustomEvent() {
+  function makeCustomEvent () {
     return new customEvent(type, { detail: model });
   }
 }
 
-function wrapperFactory(el, type, fn) {
-  return function wrapper(originalEvent) {
+function wrapperFactory (el, type, fn) {
+  return function wrapper (originalEvent) {
     var e = originalEvent || commonjsGlobal.event;
     e.target = e.target || e.srcElement;
-    e.preventDefault = e.preventDefault || function preventDefault() {
-      e.returnValue = false;
-    };
-    e.stopPropagation = e.stopPropagation || function stopPropagation() {
-      e.cancelBubble = true;
-    };
+    e.preventDefault = e.preventDefault || function preventDefault () { e.returnValue = false; };
+    e.stopPropagation = e.stopPropagation || function stopPropagation () { e.cancelBubble = true; };
     e.which = e.which || e.keyCode;
     fn.call(el, e);
   };
 }
 
-function wrap(el, type, fn) {
+function wrap (el, type, fn) {
   var wrapper = unwrap(el, type, fn) || wrapperFactory(el, type, fn);
   hardCache.push({
     wrapper: wrapper,
@@ -251,7 +228,7 @@ function wrap(el, type, fn) {
   return wrapper;
 }
 
-function unwrap(el, type, fn) {
+function unwrap (el, type, fn) {
   var i = find(el, type, fn);
   if (i) {
     var wrapper = hardCache[i].wrapper;
@@ -260,7 +237,7 @@ function unwrap(el, type, fn) {
   }
 }
 
-function find(el, type, fn) {
+function find (el, type, fn) {
   var i, item;
   for (i = 0; i < hardCache.length; i++) {
     item = hardCache[i];
@@ -274,7 +251,7 @@ var cache = {};
 var start = '(?:^|\\s)';
 var end = '(?:\\s|$)';
 
-function lookupClass(className) {
+function lookupClass (className) {
   var cached = cache[className];
   if (cached) {
     cached.lastIndex = 0;
@@ -284,7 +261,7 @@ function lookupClass(className) {
   return cached;
 }
 
-function addClass(el, className) {
+function addClass (el, className) {
   var current = el.className;
   if (!current.length) {
     el.className = className;
@@ -293,7 +270,7 @@ function addClass(el, className) {
   }
 }
 
-function rmClass(el, className) {
+function rmClass (el, className) {
   el.className = el.className.replace(lookupClass(className), ' ').trim();
 }
 
@@ -308,7 +285,7 @@ var classes = classes$1;
 var doc = document;
 var documentElement = doc.documentElement;
 
-function dragula$1(initialContainers, options) {
+function dragula$1 (initialContainers, options) {
   var len = arguments.length;
   if (len === 1 && Array.isArray(initialContainers) === false) {
     options = initialContainers;
@@ -329,42 +306,18 @@ function dragula$1(initialContainers, options) {
   var _grabbed; // holds mousedown context until first mousemove
 
   var o = options || {};
-  if (o.moves === void 0) {
-    o.moves = always;
-  }
-  if (o.accepts === void 0) {
-    o.accepts = always;
-  }
-  if (o.invalid === void 0) {
-    o.invalid = invalidTarget;
-  }
-  if (o.containers === void 0) {
-    o.containers = initialContainers || [];
-  }
-  if (o.isContainer === void 0) {
-    o.isContainer = never;
-  }
-  if (o.copy === void 0) {
-    o.copy = false;
-  }
-  if (o.copySortSource === void 0) {
-    o.copySortSource = false;
-  }
-  if (o.revertOnSpill === void 0) {
-    o.revertOnSpill = false;
-  }
-  if (o.removeOnSpill === void 0) {
-    o.removeOnSpill = false;
-  }
-  if (o.direction === void 0) {
-    o.direction = 'vertical';
-  }
-  if (o.ignoreInputTextSelection === void 0) {
-    o.ignoreInputTextSelection = true;
-  }
-  if (o.mirrorContainer === void 0) {
-    o.mirrorContainer = doc.body;
-  }
+  if (o.moves === void 0) { o.moves = always; }
+  if (o.accepts === void 0) { o.accepts = always; }
+  if (o.invalid === void 0) { o.invalid = invalidTarget; }
+  if (o.containers === void 0) { o.containers = initialContainers || []; }
+  if (o.isContainer === void 0) { o.isContainer = never; }
+  if (o.copy === void 0) { o.copy = false; }
+  if (o.copySortSource === void 0) { o.copySortSource = false; }
+  if (o.revertOnSpill === void 0) { o.revertOnSpill = false; }
+  if (o.removeOnSpill === void 0) { o.removeOnSpill = false; }
+  if (o.direction === void 0) { o.direction = 'vertical'; }
+  if (o.ignoreInputTextSelection === void 0) { o.ignoreInputTextSelection = true; }
+  if (o.mirrorContainer === void 0) { o.mirrorContainer = doc.body; }
 
   var drake = emitter({
     containers: o.containers,
@@ -385,39 +338,39 @@ function dragula$1(initialContainers, options) {
 
   return drake;
 
-  function isContainer(el) {
+  function isContainer (el) {
     return drake.containers.indexOf(el) !== -1 || o.isContainer(el);
   }
 
-  function events(remove) {
+  function events (remove) {
     var op = remove ? 'remove' : 'add';
     touchy(documentElement, op, 'mousedown', grab);
     touchy(documentElement, op, 'mouseup', release);
   }
 
-  function eventualMovements(remove) {
+  function eventualMovements (remove) {
     var op = remove ? 'remove' : 'add';
     touchy(documentElement, op, 'mousemove', startBecauseMouseMoved);
   }
 
-  function movements(remove) {
+  function movements (remove) {
     var op = remove ? 'remove' : 'add';
     crossvent[op](documentElement, 'selectstart', preventGrabbed); // IE8
     crossvent[op](documentElement, 'click', preventGrabbed);
   }
 
-  function destroy() {
+  function destroy () {
     events(true);
     release({});
   }
 
-  function preventGrabbed(e) {
+  function preventGrabbed (e) {
     if (_grabbed) {
       e.preventDefault();
     }
   }
 
-  function grab(e) {
+  function grab (e) {
     _moveX = e.clientX;
     _moveY = e.clientY;
 
@@ -433,8 +386,7 @@ function dragula$1(initialContainers, options) {
     _grabbed = context;
     eventualMovements();
     if (e.type === 'mousedown') {
-      if (isInput(item)) {
-        // see also: https://github.com/bevacqua/dragula/issues/208
+      if (isInput(item)) { // see also: https://github.com/bevacqua/dragula/issues/208
         item.focus(); // fixes https://github.com/bevacqua/dragula/issues/176
       } else {
         e.preventDefault(); // fixes https://github.com/bevacqua/dragula/issues/155
@@ -442,7 +394,7 @@ function dragula$1(initialContainers, options) {
     }
   }
 
-  function startBecauseMouseMoved(e) {
+  function startBecauseMouseMoved (e) {
     if (!_grabbed) {
       return;
     }
@@ -478,7 +430,7 @@ function dragula$1(initialContainers, options) {
     drag(e);
   }
 
-  function canStart(item) {
+  function canStart (item) {
     if (drake.dragging && _mirror) {
       return;
     }
@@ -514,18 +466,18 @@ function dragula$1(initialContainers, options) {
     };
   }
 
-  function canMove(item) {
+  function canMove (item) {
     return !!canStart(item);
   }
 
-  function manualStart(item) {
+  function manualStart (item) {
     var context = canStart(item);
     if (context) {
       start(context);
     }
   }
 
-  function start(context) {
+  function start (context) {
     if (isCopy(context.item, context.source)) {
       _copy = context.item.cloneNode(true);
       drake.emit('cloned', _copy, context.item, 'copy');
@@ -539,11 +491,11 @@ function dragula$1(initialContainers, options) {
     drake.emit('drag', _item, _source);
   }
 
-  function invalidTarget() {
+  function invalidTarget () {
     return false;
   }
 
-  function end() {
+  function end () {
     if (!drake.dragging) {
       return;
     }
@@ -551,13 +503,13 @@ function dragula$1(initialContainers, options) {
     drop(item, getParent(item));
   }
 
-  function ungrab() {
+  function ungrab () {
     _grabbed = false;
     eventualMovements(true);
     movements(true);
   }
 
-  function release(e) {
+  function release (e) {
     ungrab();
 
     if (!drake.dragging) {
@@ -568,7 +520,7 @@ function dragula$1(initialContainers, options) {
     var clientY = getCoord('clientY', e);
     var elementBehindCursor = getElementBehindPoint(_mirror, clientX, clientY);
     var dropTarget = findDropTarget(elementBehindCursor, clientX, clientY);
-    if (dropTarget && (_copy && o.copySortSource || !_copy || dropTarget !== _source)) {
+    if (dropTarget && ((_copy && o.copySortSource) || (!_copy || dropTarget !== _source))) {
       drop(item, dropTarget);
     } else if (o.removeOnSpill) {
       remove();
@@ -577,7 +529,7 @@ function dragula$1(initialContainers, options) {
     }
   }
 
-  function drop(item, target) {
+  function drop (item, target) {
     var parent = getParent(item);
     if (_copy && o.copySortSource && target === _source) {
       parent.removeChild(_item);
@@ -590,7 +542,7 @@ function dragula$1(initialContainers, options) {
     cleanup();
   }
 
-  function remove() {
+  function remove () {
     if (!drake.dragging) {
       return;
     }
@@ -603,7 +555,7 @@ function dragula$1(initialContainers, options) {
     cleanup();
   }
 
-  function cancel(revert) {
+  function cancel (revert) {
     if (!drake.dragging) {
       return;
     }
@@ -628,7 +580,7 @@ function dragula$1(initialContainers, options) {
     cleanup();
   }
 
-  function cleanup() {
+  function cleanup () {
     var item = _copy || _item;
     ungrab();
     removeMirrorImage();
@@ -646,7 +598,7 @@ function dragula$1(initialContainers, options) {
     _source = _item = _copy = _initialSibling = _currentSibling = _renderTimer = _lastDropTarget = null;
   }
 
-  function isInitialPlacement(target, s) {
+  function isInitialPlacement (target, s) {
     var sibling;
     if (s !== void 0) {
       sibling = s;
@@ -658,14 +610,14 @@ function dragula$1(initialContainers, options) {
     return target === _source && sibling === _initialSibling;
   }
 
-  function findDropTarget(elementBehindCursor, clientX, clientY) {
+  function findDropTarget (elementBehindCursor, clientX, clientY) {
     var target = elementBehindCursor;
     while (target && !accepted()) {
       target = getParent(target);
     }
     return target;
 
-    function accepted() {
+    function accepted () {
       var droppable = isContainer(target);
       if (droppable === false) {
         return false;
@@ -681,7 +633,7 @@ function dragula$1(initialContainers, options) {
     }
   }
 
-  function drag(e) {
+  function drag (e) {
     if (!_mirror) {
       return;
     }
@@ -724,37 +676,29 @@ function dragula$1(initialContainers, options) {
       }
       return;
     }
-    if (reference === null && changed || reference !== item && reference !== nextEl(item)) {
+    if (
+      (reference === null && changed) ||
+      reference !== item &&
+      reference !== nextEl(item)
+    ) {
       _currentSibling = reference;
       dropTarget.insertBefore(item, reference);
       drake.emit('shadow', item, dropTarget, _source);
     }
-    function moved(type) {
-      drake.emit(type, item, _lastDropTarget, _source);
-    }
-    function over() {
-      if (changed) {
-        moved('over');
-      }
-    }
-    function out() {
-      if (_lastDropTarget) {
-        moved('out');
-      }
-    }
+    function moved (type) { drake.emit(type, item, _lastDropTarget, _source); }
+    function over () { if (changed) { moved('over'); } }
+    function out () { if (_lastDropTarget) { moved('out'); } }
   }
 
-  function spillOver(el) {
+  function spillOver (el) {
     classes.rm(el, 'gu-hide');
   }
 
-  function spillOut(el) {
-    if (drake.dragging) {
-      classes.add(el, 'gu-hide');
-    }
+  function spillOut (el) {
+    if (drake.dragging) { classes.add(el, 'gu-hide'); }
   }
 
-  function renderMirrorImage() {
+  function renderMirrorImage () {
     if (_mirror) {
       return;
     }
@@ -770,7 +714,7 @@ function dragula$1(initialContainers, options) {
     drake.emit('cloned', _mirror, _item, 'mirror');
   }
 
-  function removeMirrorImage() {
+  function removeMirrorImage () {
     if (_mirror) {
       classes.rm(o.mirrorContainer, 'gu-unselectable');
       touchy(documentElement, 'remove', 'mousemove', drag);
@@ -779,7 +723,7 @@ function dragula$1(initialContainers, options) {
     }
   }
 
-  function getImmediateChild(dropTarget, target) {
+  function getImmediateChild (dropTarget, target) {
     var immediate = target;
     while (immediate !== dropTarget && getParent(immediate) !== dropTarget) {
       immediate = getParent(immediate);
@@ -790,13 +734,12 @@ function dragula$1(initialContainers, options) {
     return immediate;
   }
 
-  function getReference(dropTarget, target, x, y) {
+  function getReference (dropTarget, target, x, y) {
     var horizontal = o.direction === 'horizontal';
     var reference = target !== dropTarget ? inside() : outside();
     return reference;
 
-    function outside() {
-      // slower, but able to figure out any position
+    function outside () { // slower, but able to figure out any position
       var len = dropTarget.children.length;
       var i;
       var el;
@@ -804,18 +747,13 @@ function dragula$1(initialContainers, options) {
       for (i = 0; i < len; i++) {
         el = dropTarget.children[i];
         rect = el.getBoundingClientRect();
-        if (horizontal && rect.left + rect.width / 2 > x) {
-          return el;
-        }
-        if (!horizontal && rect.top + rect.height / 2 > y) {
-          return el;
-        }
+        if (horizontal && (rect.left + rect.width / 2) > x) { return el; }
+        if (!horizontal && (rect.top + rect.height / 2) > y) { return el; }
       }
       return null;
     }
 
-    function inside() {
-      // faster, but only available if dropped inside a child element
+    function inside () { // faster, but only available if dropped inside a child element
       var rect = target.getBoundingClientRect();
       if (horizontal) {
         return resolve(x > rect.left + getRectWidth(rect) / 2);
@@ -823,17 +761,17 @@ function dragula$1(initialContainers, options) {
       return resolve(y > rect.top + getRectHeight(rect) / 2);
     }
 
-    function resolve(after) {
+    function resolve (after) {
       return after ? nextEl(target) : target;
     }
   }
 
-  function isCopy(item, container) {
+  function isCopy (item, container) {
     return typeof o.copy === 'boolean' ? o.copy : o.copy(item, container);
   }
 }
 
-function touchy(el, op, type, fn) {
+function touchy (el, op, type, fn) {
   var touch = {
     mouseup: 'touchend',
     mousedown: 'touchstart',
@@ -859,24 +797,17 @@ function touchy(el, op, type, fn) {
   }
 }
 
-function whichMouseButton(e) {
-  if (e.touches !== void 0) {
-    return e.touches.length;
-  }
-  if (e.which !== void 0 && e.which !== 0) {
-    return e.which;
-  } // see https://github.com/bevacqua/dragula/issues/261
-  if (e.buttons !== void 0) {
-    return e.buttons;
-  }
+function whichMouseButton (e) {
+  if (e.touches !== void 0) { return e.touches.length; }
+  if (e.which !== void 0 && e.which !== 0) { return e.which; } // see https://github.com/bevacqua/dragula/issues/261
+  if (e.buttons !== void 0) { return e.buttons; }
   var button = e.button;
-  if (button !== void 0) {
-    // see https://github.com/jquery/jquery/blob/99e8ff1baa7ae341e94bb89c3e84570c7c3ad9ea/src/event.js#L573-L575
-    return button & 1 ? 1 : button & 2 ? 3 : button & 4 ? 2 : 0;
+  if (button !== void 0) { // see https://github.com/jquery/jquery/blob/99e8ff1baa7ae341e94bb89c3e84570c7c3ad9ea/src/event.js#L573-L575
+    return button & 1 ? 1 : button & 2 ? 3 : (button & 4 ? 2 : 0);
   }
 }
 
-function getOffset(el) {
+function getOffset (el) {
   var rect = el.getBoundingClientRect();
   return {
     left: rect.left + getScroll('scrollLeft', 'pageXOffset'),
@@ -884,7 +815,7 @@ function getOffset(el) {
   };
 }
 
-function getScroll(scrollProp, offsetProp) {
+function getScroll (scrollProp, offsetProp) {
   if (typeof commonjsGlobal[offsetProp] !== 'undefined') {
     return commonjsGlobal[offsetProp];
   }
@@ -894,7 +825,7 @@ function getScroll(scrollProp, offsetProp) {
   return doc.body[scrollProp];
 }
 
-function getElementBehindPoint(point, x, y) {
+function getElementBehindPoint (point, x, y) {
   var p = point || {};
   var state = p.className;
   var el;
@@ -904,40 +835,22 @@ function getElementBehindPoint(point, x, y) {
   return el;
 }
 
-function never() {
-  return false;
-}
-function always() {
-  return true;
-}
-function getRectWidth(rect) {
-  return rect.width || rect.right - rect.left;
-}
-function getRectHeight(rect) {
-  return rect.height || rect.bottom - rect.top;
-}
-function getParent(el) {
-  return el.parentNode === doc ? null : el.parentNode;
-}
-function isInput(el) {
-  return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || isEditable(el);
-}
-function isEditable(el) {
-  if (!el) {
-    return false;
-  } // no parents were editable
-  if (el.contentEditable === 'false') {
-    return false;
-  } // stop the lookup
-  if (el.contentEditable === 'true') {
-    return true;
-  } // found a contentEditable element in the chain
+function never () { return false; }
+function always () { return true; }
+function getRectWidth (rect) { return rect.width || (rect.right - rect.left); }
+function getRectHeight (rect) { return rect.height || (rect.bottom - rect.top); }
+function getParent (el) { return el.parentNode === doc ? null : el.parentNode; }
+function isInput (el) { return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || isEditable(el); }
+function isEditable (el) {
+  if (!el) { return false; } // no parents were editable
+  if (el.contentEditable === 'false') { return false; } // stop the lookup
+  if (el.contentEditable === 'true') { return true; } // found a contentEditable element in the chain
   return isEditable(getParent(el)); // contentEditable is set to 'inherit'
 }
 
-function nextEl(el) {
+function nextEl (el) {
   return el.nextElementSibling || manually();
-  function manually() {
+  function manually () {
     var sibling = el;
     do {
       sibling = sibling.nextSibling;
@@ -946,7 +859,7 @@ function nextEl(el) {
   }
 }
 
-function getEventHost(e) {
+function getEventHost (e) {
   // on touchend event, we have to use `e.changedTouches`
   // see http://stackoverflow.com/questions/7192563/touchend-event-properties
   // see https://github.com/bevacqua/dragula/issues/34
@@ -959,7 +872,7 @@ function getEventHost(e) {
   return e;
 }
 
-function getCoord(coord, e) {
+function getCoord (coord, e) {
   var host = getEventHost(e);
   var missMap = {
     pageX: 'clientX', // IE8
@@ -991,8 +904,10 @@ function boolean(func, def) {
 
     if (typeof func === 'function') {
         return function f() {
+            var arguments$1 = arguments;
+
             for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-                args[_key] = arguments[_key];
+                args[_key] = arguments$1[_key];
             }
 
             return !!func.apply(this, args);
@@ -1012,8 +927,10 @@ function integer(func, def) {
 
     if (typeof func === 'function') {
         return function f() {
+            var arguments$1 = arguments;
+
             for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-                args[_key2] = arguments[_key2];
+                args[_key2] = arguments$1[_key2];
             }
 
             var n = parseInt(func.apply(this, args), 10);
@@ -1036,8 +953,10 @@ function string(func, def) {
 
     if (typeof func === 'function') {
         return function f() {
+            var arguments$1 = arguments;
+
             for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-                args[_key3] = arguments[_key3];
+                args[_key3] = arguments$1[_key3];
             }
 
             return '' + func.apply(this, args);
@@ -1108,11 +1027,7 @@ var cancelAnimationFrame = exports.cancelAnimationFrame = function () {
 }();
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-};
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 /**
  * Returns `true` if provided input is Element.
@@ -1130,18 +1045,14 @@ var index$3 = Object.freeze({
 
 // Production steps of ECMA-262, Edition 6, 22.1.2.1
 // Reference: http://www.ecma-international.org/ecma-262/6.0/#sec-array.from
-var polyfill = function () {
-  var isCallable = function (fn) {
+var polyfill = (function() {
+  var isCallable = function(fn) {
     return typeof fn === 'function';
   };
   var toInteger = function (value) {
     var number = Number(value);
-    if (isNaN(number)) {
-      return 0;
-    }
-    if (number === 0 || !isFinite(number)) {
-      return number;
-    }
+    if (isNaN(number)) { return 0; }
+    if (number === 0 || !isFinite(number)) { return number; }
     return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
   };
   var maxSafeInteger = Math.pow(2, 53) - 1;
@@ -1149,27 +1060,31 @@ var polyfill = function () {
     var len = toInteger(value);
     return Math.min(Math.max(len, 0), maxSafeInteger);
   };
-  var iteratorProp = function (value) {
-    if (value != null) {
-      if (['string', 'number', 'boolean', 'symbol'].indexOf(typeof value) > -1) {
+  var iteratorProp = function(value) {
+    if(value != null) {
+      if(['string','number','boolean','symbol'].indexOf(typeof value) > -1){
         return Symbol.iterator;
-      } else if (typeof Symbol !== 'undefined' && 'iterator' in Symbol && Symbol.iterator in value) {
+      } else if (
+        (typeof Symbol !== 'undefined') &&
+        ('iterator' in Symbol) &&
+        (Symbol.iterator in value)
+      ) {
         return Symbol.iterator;
       }
       // Support "@@iterator" placeholder, Gecko 27 to Gecko 35
       else if ('@@iterator' in value) {
-          return '@@iterator';
-        }
+        return '@@iterator';
+      }
     }
   };
-  var getMethod = function (O, P) {
+  var getMethod = function(O, P) {
     // Assert: IsPropertyKey(P) is true.
     if (O != null && P != null) {
       // Let func be GetV(O, P).
       var func = O[P];
       // ReturnIfAbrupt(func).
       // If func is either undefined or null, return undefined.
-      if (func == null) {
+      if(func == null) {
         return void 0;
       }
       // If IsCallable(func) is false, throw a TypeError exception.
@@ -1179,7 +1094,7 @@ var polyfill = function () {
       return func;
     }
   };
-  var iteratorStep = function (iterator) {
+  var iteratorStep = function(iterator) {
     // Let result be IteratorNext(iterator).
     // ReturnIfAbrupt(result).
     var result = iterator.next();
@@ -1187,7 +1102,7 @@ var polyfill = function () {
     // ReturnIfAbrupt(done).
     var done = Boolean(result.done);
     // If done is true, return false.
-    if (done) {
+    if(done) {
       return false;
     }
     // Return result.
@@ -1195,11 +1110,10 @@ var polyfill = function () {
   };
 
   // The length property of the from method is 1.
-  return function from(items /*, mapFn, thisArg */) {
+  return function from(items /*, mapFn, thisArg */ ) {
     'use strict';
 
     // 1. Let C be the this value.
-
     var C = this;
 
     // 2. If mapfn is undefined, let mapping be false.
@@ -1210,7 +1124,9 @@ var polyfill = function () {
       // 3. else
       //   a. If IsCallable(mapfn) is false, throw a TypeError exception.
       if (!isCallable(mapFn)) {
-        throw new TypeError('Array.from: when provided, the second argument must be a function');
+        throw new TypeError(
+          'Array.from: when provided, the second argument must be a function'
+        );
       }
 
       //   b. If thisArg was supplied, let T be thisArg; else let T
@@ -1243,7 +1159,9 @@ var polyfill = function () {
 
       // e. ReturnIfAbrupt(iterator).
       if (iterator == null) {
-        throw new TypeError('Array.from requires an array-like or iterable object');
+        throw new TypeError(
+          'Array.from requires an array-like or iterable object'
+        );
       }
 
       // f. Let k be 0.
@@ -1283,7 +1201,8 @@ var polyfill = function () {
         //    IteratorClose(iterator, defineStatus).
         if (mapFn) {
           A[k] = mapFn.call(T, nextValue, k);
-        } else {
+        }
+        else {
           A[k] = nextValue;
         }
         // xi. Increase k by 1.
@@ -1298,7 +1217,9 @@ var polyfill = function () {
 
       // 9. ReturnIfAbrupt(items).
       if (items == null) {
-        throw new TypeError('Array.from requires an array-like object - not null or undefined');
+        throw new TypeError(
+          'Array.from requires an array-like object - not null or undefined'
+        );
       }
 
       // 10. Let len be ToLength(Get(arrayLike, "length")).
@@ -1320,7 +1241,8 @@ var polyfill = function () {
         kValue = arrayLike[k];
         if (mapFn) {
           A[k] = mapFn.call(T, kValue, k);
-        } else {
+        }
+        else {
           A[k] = kValue;
         }
         k++;
@@ -1332,9 +1254,12 @@ var polyfill = function () {
     }
     return A;
   };
-}();
+})();
 
-var index$4 = typeof Array.from === 'function' ? Array.from : polyfill;
+var index$4 = (typeof Array.from === 'function' ?
+  Array.from :
+  polyfill
+);
 
 /**
  * isArray
@@ -1366,7 +1291,7 @@ var str = Object.prototype.toString;
  */
 
 var index$6 = isArray || function (val) {
-  return !!val && '[object Array]' == str.call(val);
+  return !! val && '[object Array]' == str.call(val);
 };
 
 var require$$2$1 = ( index$3 && index$2 ) || index$3;
@@ -1376,9 +1301,7 @@ var bundle$4 = createCommonjsModule(function (module, exports) {
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function _interopDefault(ex) {
-    return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
-}
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var isElement = _interopDefault(require$$2$1);
 var arrayFrom = _interopDefault(index$4);
@@ -1386,7 +1309,7 @@ var isArray = _interopDefault(index$6);
 
 function indexOfElement(elements, element) {
     element = resolveElement(element, true);
-    if (!isElement(element)) return -1;
+    if (!isElement(element)) { return -1; }
     for (var i = 0; i < elements.length; i++) {
         if (elements[i] === element) {
             return i;
@@ -1401,7 +1324,7 @@ function hasElement(elements, element) {
 
 function domListOf(arr) {
 
-    if (!arr) return [];
+    if (!arr) { return []; }
 
     try {
         if (typeof arr === 'string') {
@@ -1421,8 +1344,10 @@ function domListOf(arr) {
 }
 
 function concatElementLists() {
+    var arguments$1 = arguments;
+
     for (var _len = arguments.length, lists = Array(_len), _key = 0; _key < _len; _key++) {
-        lists[_key] = arguments[_key];
+        lists[_key] = arguments$1[_key];
     }
 
     return lists.reduce(function (last, list) {
@@ -1433,15 +1358,17 @@ function concatElementLists() {
 function pushElements(elements, toAdd) {
 
     for (var i = 0; i < toAdd.length; i++) {
-        if (!hasElement(elements, toAdd[i])) elements.push(toAdd[i]);
+        if (!hasElement(elements, toAdd[i])) { elements.push(toAdd[i]); }
     }
 
     return toAdd;
 }
 
 function addElements(elements) {
+    var arguments$1 = arguments;
+
     for (var _len2 = arguments.length, toAdd = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        toAdd[_key2 - 1] = arguments[_key2];
+        toAdd[_key2 - 1] = arguments$1[_key2];
     }
 
     toAdd = toAdd.map(resolveElement);
@@ -1449,15 +1376,17 @@ function addElements(elements) {
 }
 
 function removeElements(elements) {
+    var arguments$1 = arguments;
+
     for (var _len3 = arguments.length, toRemove = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-        toRemove[_key3 - 1] = arguments[_key3];
+        toRemove[_key3 - 1] = arguments$1[_key3];
     }
 
     return toRemove.map(resolveElement).reduce(function (last, e) {
 
         var index = indexOfElement(elements, e);
 
-        if (index !== -1) return last.concat(elements.splice(index, 1));
+        if (index !== -1) { return last.concat(elements.splice(index, 1)); }
         return last;
     }, []);
 }
@@ -1487,7 +1416,7 @@ exports.resolveElement = resolveElement;
 
 });
 
-var index$8 = function createPointCB(object, options) {
+var index$8 = function createPointCB(object, options){
 
     // A persistent object (as opposed to returned object) is used to save memory
     // This is good to prevent layout thrashing, or for games, and such
@@ -1503,34 +1432,32 @@ var index$8 = function createPointCB(object, options) {
 
     var allowUpdate;
 
-    if (typeof options.allowUpdate === 'function') {
+    if(typeof options.allowUpdate === 'function'){
         allowUpdate = options.allowUpdate;
-    } else {
-        allowUpdate = function () {
-            return true;
-        };
+    }else{
+        allowUpdate = function(){return true;};
     }
 
-    return function pointCB(event) {
+    return function pointCB(event){
 
         event = event || window.event; // IE-ism
         object.target = event.target || event.srcElement || event.originalTarget;
         object.element = this;
         object.type = event.type;
 
-        if (!allowUpdate(event)) {
+        if(!allowUpdate(event)){
             return;
         }
 
         // Support touch
         // http://www.creativebloq.com/javascript/make-your-site-work-touch-devices-51411644
 
-        if (event.targetTouches) {
+        if(event.targetTouches){
             object.x = event.targetTouches[0].clientX;
             object.y = event.targetTouches[0].clientY;
             object.pageX = event.pageX;
             object.pageY = event.pageY;
-        } else {
+        }else{
 
             // If pageX/Y aren't available and clientX/Y are,
             // calculate pageX/Y - logic taken from jQuery.
@@ -1538,13 +1465,17 @@ var index$8 = function createPointCB(object, options) {
             // NOTE Hopefully this can be removed soon.
 
             if (event.pageX === null && event.clientX !== null) {
-                var eventDoc = event.target && event.target.ownerDocument || document;
+                var eventDoc = (event.target && event.target.ownerDocument) || document;
                 var doc = eventDoc.documentElement;
                 var body = eventDoc.body;
 
-                object.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-                object.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0);
-            } else {
+                object.pageX = event.clientX +
+                  (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+                  (doc && doc.clientLeft || body && body.clientLeft || 0);
+                object.pageY = event.clientY +
+                  (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+                  (doc && doc.clientTop  || body && body.clientTop  || 0 );
+            }else{
                 object.pageX = event.pageX;
                 object.pageY = event.pageY;
             }
@@ -1557,6 +1488,7 @@ var index$8 = function createPointCB(object, options) {
             object.x = event.clientX;
             object.y = event.clientY;
         }
+
     };
 
     //NOTE Remember accessibility, Aria roles, and labels.
@@ -1572,9 +1504,7 @@ var bundle$6 = createCommonjsModule(function (module, exports) {
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function _interopDefault(ex) {
-    return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
-}
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var createPointCb = _interopDefault(index$8);
 
@@ -1629,28 +1559,28 @@ exports.pointInside = pointInside;
 
 var objectCreate = void 0;
 if (typeof Object.create != 'function') {
-    objectCreate = function (undefined) {
-        var Temp = function Temp() {};
-        return function (prototype, propertiesObject) {
-            if (prototype !== Object(prototype) && prototype !== null) {
-                throw TypeError('Argument must be an object, or null');
-            }
-            Temp.prototype = prototype || {};
-            var result = new Temp();
-            Temp.prototype = null;
-            if (propertiesObject !== undefined) {
-                Object.defineProperties(result, propertiesObject);
-            }
+  objectCreate = function (undefined) {
+    var Temp = function Temp() {};
+    return function (prototype, propertiesObject) {
+      if (prototype !== Object(prototype) && prototype !== null) {
+        throw TypeError('Argument must be an object, or null');
+      }
+      Temp.prototype = prototype || {};
+      var result = new Temp();
+      Temp.prototype = null;
+      if (propertiesObject !== undefined) {
+        Object.defineProperties(result, propertiesObject);
+      }
 
-            // to imitate the case of Object.create(null)
-            if (prototype === null) {
-                result.__proto__ = null;
-            }
-            return result;
-        };
-    }();
+      // to imitate the case of Object.create(null)
+      if (prototype === null) {
+        result.__proto__ = null;
+      }
+      return result;
+    };
+  }();
 } else {
-    objectCreate = Object.create;
+  objectCreate = Object.create;
 }
 
 var objectCreate$1 = objectCreate;
@@ -1737,7 +1667,7 @@ function createDispatcher(element) {
     }();
 
     function destroy() {
-        if (element) element.removeEventListener('mousemove', onMove, false);
+        if (element) { element.removeEventListener('mousemove', onMove, false); }
         defaultSettings = null;
     }
 
@@ -1751,7 +1681,7 @@ function createMoveInit(defaultSettings, initMove) {
     initMove = initMove || {};
     var settings = objectCreate$1(defaultSettings);
     for (var i = 0; i < mouseEventProps.length; i++) {
-        if (initMove[mouseEventProps[i]] !== undefined) settings[mouseEventProps[i]] = initMove[mouseEventProps[i]];
+        if (initMove[mouseEventProps[i]] !== undefined) { settings[mouseEventProps[i]] = initMove[mouseEventProps[i]]; }
     }
 
     return settings;
@@ -1769,9 +1699,7 @@ http://marcgrabanski.com/simulating-mouse-click-events-in-javascript/
 
 var bundle$8 = createDispatcher;
 
-function _interopDefault$1(ex) {
-    return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
-}
+function _interopDefault$1 (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var typeFunc = bundle$2;
 var animationFramePolyfill = animationFramePolyfill_cjs;
@@ -1779,12 +1707,11 @@ var domSet = bundle$4;
 var domPlane = bundle$6;
 var mousemoveDispatcher = _interopDefault$1(bundle$8);
 
-function AutoScroller(elements) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function AutoScroller(elements, options){
+    if ( options === void 0 ) { options = {}; }
 
     var self = this;
-    var maxSpeed = 4,
-        scrolling = false;
+    var maxSpeed = 4, scrolling = false;
 
     this.margin = options.margin || -1;
     //this.scrolling = false;
@@ -1798,14 +1725,14 @@ function AutoScroller(elements) {
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
 
-    if (!isNaN(options.maxSpeed)) {
+    if(!isNaN(options.maxSpeed)){
         maxSpeed = options.maxSpeed;
     }
 
     this.autoScroll = typeFunc.boolean(options.autoScroll);
     this.syncMove = typeFunc.boolean(options.syncMove, false);
 
-    this.destroy = function () {
+    this.destroy = function() {
         window.removeEventListener('mousemove', pointCB, false);
         window.removeEventListener('touchmove', pointCB, false);
         window.removeEventListener('mousedown', onDown, false);
@@ -1820,67 +1747,58 @@ function AutoScroller(elements) {
         elements = [];
     };
 
-    this.add = function () {
-        for (var _len = arguments.length, element = Array(_len), _key = 0; _key < _len; _key++) {
-            element[_key] = arguments[_key];
-        }
+    this.add = function(){
+        var arguments$1 = arguments;
 
-        domSet.addElements.apply(undefined, [elements].concat(element));
+        var element = [], len = arguments.length;
+        while ( len-- ) { element[ len ] = arguments$1[ len ]; }
+
+        domSet.addElements.apply(void 0, [ elements ].concat( element ));
         return this;
     };
 
-    this.remove = function () {
-        for (var _len2 = arguments.length, element = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            element[_key2] = arguments[_key2];
-        }
+    this.remove = function(){
+        var arguments$1 = arguments;
 
-        return domSet.removeElements.apply(undefined, [elements].concat(element));
+        var element = [], len = arguments.length;
+        while ( len-- ) { element[ len ] = arguments$1[ len ]; }
+
+        return domSet.removeElements.apply(void 0, [ elements ].concat( element ));
     };
 
-    var hasWindow = null,
-        windowAnimationFrame = void 0;
+    var hasWindow = null, windowAnimationFrame;
 
-    if (Object.prototype.toString.call(elements) !== '[object Array]') {
+    if(Object.prototype.toString.call(elements) !== '[object Array]'){
         elements = [elements];
     }
 
-    (function (temp) {
+    (function(temp){
         elements = [];
-        temp.forEach(function (element) {
-            if (element === window) {
+        temp.forEach(function(element){
+            if(element === window){
                 hasWindow = window;
-            } else {
+            }else{
                 self.add(element);
             }
         });
-    })(elements);
+    }(elements));
 
     Object.defineProperties(this, {
         down: {
-            get: function get() {
-                return down;
-            }
+            get: function(){ return down; }
         },
         maxSpeed: {
-            get: function get() {
-                return maxSpeed;
-            }
+            get: function(){ return maxSpeed; }
         },
         point: {
-            get: function get() {
-                return point;
-            }
+            get: function(){ return point; }
         },
         scrolling: {
-            get: function get() {
-                return scrolling;
-            }
+            get: function(){ return scrolling; }
         }
     });
 
-    var n = 0,
-        current = null,
-        animationFrame = void 0;
+    var n = 0, current = null, animationFrame;
 
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
@@ -1894,51 +1812,49 @@ function AutoScroller(elements) {
 
     window.addEventListener('scroll', setScroll, true);
 
-    function setScroll(e) {
+    function setScroll(e){
 
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i] === e.target) {
+        for(var i=0; i<elements.length; i++){
+            if(elements[i] === e.target){
                 scrolling = true;
                 break;
             }
         }
 
-        if (scrolling) {
-            animationFramePolyfill.requestAnimationFrame(function () {
-                return scrolling = false;
-            });
+        if(scrolling){
+            animationFramePolyfill.requestAnimationFrame(function (){ return scrolling = false; });
         }
     }
 
-    function onDown() {
+    function onDown(){
         down = true;
     }
 
-    function onUp() {
+    function onUp(){
         down = false;
         animationFramePolyfill.cancelAnimationFrame(animationFrame);
         animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
     }
 
-    function onMouseOut() {
+    function onMouseOut(){
         down = false;
     }
 
-    function getTarget(target) {
-        if (!target) {
+    function getTarget(target){
+        if(!target){
             return null;
         }
 
-        if (current === target) {
+        if(current === target){
             return target;
         }
 
-        if (domSet.hasElement(elements, target)) {
+        if(domSet.hasElement(elements, target)){
             return target;
         }
 
-        while (target = target.parentNode) {
-            if (domSet.hasElement(elements, target)) {
+        while(target = target.parentNode){
+            if(domSet.hasElement(elements, target)){
                 return target;
             }
         }
@@ -1946,11 +1862,11 @@ function AutoScroller(elements) {
         return null;
     }
 
-    function getElementUnderPoint() {
+    function getElementUnderPoint(){
         var underPoint = null;
 
-        for (var i = 0; i < elements.length; i++) {
-            if (inside(point, elements[i])) {
+        for(var i=0; i<elements.length; i++){
+            if(inside(point, elements[i])){
                 underPoint = elements[i];
             }
         }
@@ -1958,44 +1874,44 @@ function AutoScroller(elements) {
         return underPoint;
     }
 
-    function onMove(event) {
 
-        if (!self.autoScroll()) return;
+    function onMove(event){
 
-        if (event['dispatched']) {
-            return;
-        }
+        if(!self.autoScroll()) { return; }
 
-        var target = event.target,
-            body = document.body;
+        if(event['dispatched']){ return; }
 
-        if (current && !inside(point, current)) {
-            if (!self.scrollWhenOutside) {
+        var target = event.target, body = document.body;
+
+        if(current && !inside(point, current)){
+            if(!self.scrollWhenOutside){
                 current = null;
             }
         }
 
-        if (target && target.parentNode === body) {
+        if(target && target.parentNode === body){
             //The special condition to improve speed.
             target = getElementUnderPoint();
-        } else {
+        }else{
             target = getTarget(target);
 
-            if (!target) {
+            if(!target){
                 target = getElementUnderPoint();
             }
         }
 
-        if (target && target !== current) {
+
+        if(target && target !== current){
             current = target;
         }
 
-        if (hasWindow) {
+        if(hasWindow){
             animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
             windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
         }
 
-        if (!current) {
+
+        if(!current){
             return;
         }
 
@@ -2003,16 +1919,16 @@ function AutoScroller(elements) {
         animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
     }
 
-    function scrollWindow() {
+    function scrollWindow(){
         autoScroll(hasWindow);
 
         animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
         windowAnimationFrame = animationFramePolyfill.requestAnimationFrame(scrollWindow);
     }
 
-    function scrollTick() {
+    function scrollTick(){
 
-        if (!current) {
+        if(!current){
             return;
         }
 
@@ -2020,30 +1936,38 @@ function AutoScroller(elements) {
 
         animationFramePolyfill.cancelAnimationFrame(animationFrame);
         animationFrame = animationFramePolyfill.requestAnimationFrame(scrollTick);
+
     }
 
-    function autoScroll(el) {
-        var rect = domPlane.getClientRect(el),
-            scrollx = void 0,
-            scrolly = void 0;
 
-        if (point.x < rect.left + self.margin) {
-            scrollx = Math.floor(Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed);
-        } else if (point.x > rect.right - self.margin) {
-            scrollx = Math.ceil(Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed);
-        } else {
+    function autoScroll(el){
+        var rect = domPlane.getClientRect(el), scrollx, scrolly;
+
+        if(point.x < rect.left + self.margin){
+            scrollx = Math.floor(
+                Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed
+            );
+        }else if(point.x > rect.right - self.margin){
+            scrollx = Math.ceil(
+                Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed
+            );
+        }else{
             scrollx = 0;
         }
 
-        if (point.y < rect.top + self.margin) {
-            scrolly = Math.floor(Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed);
-        } else if (point.y > rect.bottom - self.margin) {
-            scrolly = Math.ceil(Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed);
-        } else {
+        if(point.y < rect.top + self.margin){
+            scrolly = Math.floor(
+                Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed
+            );
+        }else if(point.y > rect.bottom - self.margin){
+            scrolly = Math.ceil(
+                Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed
+            );
+        }else{
             scrolly = 0;
         }
 
-        if (self.syncMove()) {
+        if(self.syncMove()){
             /*
             Notes about mousemove event dispatch.
             screen(X/Y) should need to be updated.
@@ -2058,44 +1982,47 @@ function AutoScroller(elements) {
             });
         }
 
-        setTimeout(function () {
+        setTimeout(function (){
 
-            if (scrolly) {
+            if(scrolly){
                 scrollY(el, scrolly);
             }
 
-            if (scrollx) {
+            if(scrollx){
                 scrollX(el, scrollx);
             }
+
         });
     }
 
-    function scrollY(el, amount) {
-        if (el === window) {
+    function scrollY(el, amount){
+        if(el === window){
             window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
-        } else {
+        }else{
             el.scrollTop += amount;
         }
     }
 
-    function scrollX(el, amount) {
-        if (el === window) {
+    function scrollX(el, amount){
+        if(el === window){
             window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
-        } else {
+        }else{
             el.scrollLeft += amount;
         }
     }
+
 }
 
-function AutoScrollerFactory(element, options) {
+function AutoScrollerFactory(element, options){
     return new AutoScroller(element, options);
 }
 
-function inside(point, el, rect) {
-    if (!rect) {
+function inside(point, el, rect){
+    if(!rect){
         return domPlane.pointInside(point, el);
-    } else {
-        return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
+    }else{
+        return (point.y > rect.top && point.y < rect.bottom &&
+                point.x > rect.left && point.x < rect.right);
     }
 }
 
@@ -2106,16 +2033,21 @@ git push -u origin master
 
 var bundle = AutoScrollerFactory;
 
-var dragula = dragula_1; //,
-autoScroll = bundle;
+var dragula = dragula_1;//,
+    autoScroll = bundle;
+
 
 var drake = dragula([document.querySelector('#list'), document.querySelector('#hlist')]);
 
-var scroll = autoScroll([window, document.querySelector('#list-container'), document.querySelector('#container2')], {
+var scroll = autoScroll([
+        window,
+        document.querySelector('#list-container'),
+        document.querySelector('#container2')
+    ],{
     margin: 20,
     maxSpeed: 20,
     syncMove: true,
-    autoScroll: function () {
+    autoScroll: function(){
         return this.down && drake.dragging;
     }
 });

@@ -14,8 +14,10 @@ function boolean(func, def) {
 
     if (typeof func === 'function') {
         return function f() {
+            var arguments$1 = arguments;
+
             for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-                args[_key] = arguments[_key];
+                args[_key] = arguments$1[_key];
             }
 
             return !!func.apply(this, args);
@@ -73,11 +75,7 @@ var cancelAnimationFrame = function () {
   return window.cancelAnimationFrame.bind(window);
 }();
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-};
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 /**
  * Returns `true` if provided input is Element.
@@ -98,7 +96,7 @@ var isElement = function (input) {
 
 function indexOfElement(elements, element) {
     element = resolveElement(element, true);
-    if (!isElement(element)) return -1;
+    if (!isElement(element)) { return -1; }
     for (var i = 0; i < elements.length; i++) {
         if (elements[i] === element) {
             return i;
@@ -114,15 +112,17 @@ function hasElement(elements, element) {
 function pushElements(elements, toAdd) {
 
     for (var i = 0; i < toAdd.length; i++) {
-        if (!hasElement(elements, toAdd[i])) elements.push(toAdd[i]);
+        if (!hasElement(elements, toAdd[i])) { elements.push(toAdd[i]); }
     }
 
     return toAdd;
 }
 
 function addElements(elements) {
+    var arguments$1 = arguments;
+
     for (var _len2 = arguments.length, toAdd = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        toAdd[_key2 - 1] = arguments[_key2];
+        toAdd[_key2 - 1] = arguments$1[_key2];
     }
 
     toAdd = toAdd.map(resolveElement);
@@ -130,15 +130,17 @@ function addElements(elements) {
 }
 
 function removeElements(elements) {
+    var arguments$1 = arguments;
+
     for (var _len3 = arguments.length, toRemove = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-        toRemove[_key3 - 1] = arguments[_key3];
+        toRemove[_key3 - 1] = arguments$1[_key3];
     }
 
     return toRemove.map(resolveElement).reduce(function (last, e) {
 
         var index$$1 = indexOfElement(elements, e);
 
-        if (index$$1 !== -1) return last.concat(elements.splice(index$$1, 1));
+        if (index$$1 !== -1) { return last.concat(elements.splice(index$$1, 1)); }
         return last;
     }, []);
 }
@@ -158,7 +160,7 @@ function resolveElement(element, noThrow) {
     return element;
 }
 
-var index$2 = function createPointCB(object, options) {
+var index$2 = function createPointCB(object, options){
 
     // A persistent object (as opposed to returned object) is used to save memory
     // This is good to prevent layout thrashing, or for games, and such
@@ -174,34 +176,32 @@ var index$2 = function createPointCB(object, options) {
 
     var allowUpdate;
 
-    if (typeof options.allowUpdate === 'function') {
+    if(typeof options.allowUpdate === 'function'){
         allowUpdate = options.allowUpdate;
-    } else {
-        allowUpdate = function () {
-            return true;
-        };
+    }else{
+        allowUpdate = function(){return true;};
     }
 
-    return function pointCB(event) {
+    return function pointCB(event){
 
         event = event || window.event; // IE-ism
         object.target = event.target || event.srcElement || event.originalTarget;
         object.element = this;
         object.type = event.type;
 
-        if (!allowUpdate(event)) {
+        if(!allowUpdate(event)){
             return;
         }
 
         // Support touch
         // http://www.creativebloq.com/javascript/make-your-site-work-touch-devices-51411644
 
-        if (event.targetTouches) {
+        if(event.targetTouches){
             object.x = event.targetTouches[0].clientX;
             object.y = event.targetTouches[0].clientY;
             object.pageX = event.pageX;
             object.pageY = event.pageY;
-        } else {
+        }else{
 
             // If pageX/Y aren't available and clientX/Y are,
             // calculate pageX/Y - logic taken from jQuery.
@@ -209,13 +209,17 @@ var index$2 = function createPointCB(object, options) {
             // NOTE Hopefully this can be removed soon.
 
             if (event.pageX === null && event.clientX !== null) {
-                var eventDoc = event.target && event.target.ownerDocument || document;
+                var eventDoc = (event.target && event.target.ownerDocument) || document;
                 var doc = eventDoc.documentElement;
                 var body = eventDoc.body;
 
-                object.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-                object.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0);
-            } else {
+                object.pageX = event.clientX +
+                  (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+                  (doc && doc.clientLeft || body && body.clientLeft || 0);
+                object.pageY = event.clientY +
+                  (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+                  (doc && doc.clientTop  || body && body.clientTop  || 0 );
+            }else{
                 object.pageX = event.pageX;
                 object.pageY = event.pageY;
             }
@@ -228,6 +232,7 @@ var index$2 = function createPointCB(object, options) {
             object.x = event.clientX;
             object.y = event.clientY;
         }
+
     };
 
     //NOTE Remember accessibility, Aria roles, and labels.
@@ -278,28 +283,28 @@ function pointInside(point, el) {
 
 var objectCreate = void 0;
 if (typeof Object.create != 'function') {
-    objectCreate = function (undefined) {
-        var Temp = function Temp() {};
-        return function (prototype, propertiesObject) {
-            if (prototype !== Object(prototype) && prototype !== null) {
-                throw TypeError('Argument must be an object, or null');
-            }
-            Temp.prototype = prototype || {};
-            var result = new Temp();
-            Temp.prototype = null;
-            if (propertiesObject !== undefined) {
-                Object.defineProperties(result, propertiesObject);
-            }
+  objectCreate = function (undefined) {
+    var Temp = function Temp() {};
+    return function (prototype, propertiesObject) {
+      if (prototype !== Object(prototype) && prototype !== null) {
+        throw TypeError('Argument must be an object, or null');
+      }
+      Temp.prototype = prototype || {};
+      var result = new Temp();
+      Temp.prototype = null;
+      if (propertiesObject !== undefined) {
+        Object.defineProperties(result, propertiesObject);
+      }
 
-            // to imitate the case of Object.create(null)
-            if (prototype === null) {
-                result.__proto__ = null;
-            }
-            return result;
-        };
-    }();
+      // to imitate the case of Object.create(null)
+      if (prototype === null) {
+        result.__proto__ = null;
+      }
+      return result;
+    };
+  }();
 } else {
-    objectCreate = Object.create;
+  objectCreate = Object.create;
 }
 
 var objectCreate$1 = objectCreate;
@@ -386,7 +391,7 @@ function createDispatcher(element) {
     }();
 
     function destroy() {
-        if (element) element.removeEventListener('mousemove', onMove, false);
+        if (element) { element.removeEventListener('mousemove', onMove, false); }
         defaultSettings = null;
     }
 
@@ -400,7 +405,7 @@ function createMoveInit(defaultSettings, initMove) {
     initMove = initMove || {};
     var settings = objectCreate$1(defaultSettings);
     for (var i = 0; i < mouseEventProps.length; i++) {
-        if (initMove[mouseEventProps[i]] !== undefined) settings[mouseEventProps[i]] = initMove[mouseEventProps[i]];
+        if (initMove[mouseEventProps[i]] !== undefined) { settings[mouseEventProps[i]] = initMove[mouseEventProps[i]]; }
     }
 
     return settings;
@@ -412,12 +417,11 @@ function setSpecial(e, data) {
     e.dispatched = 'mousemove';
 }
 
-function AutoScroller(elements) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function AutoScroller(elements, options){
+    if ( options === void 0 ) options = {};
 
     var self = this;
-    var maxSpeed = 4,
-        scrolling = false;
+    var maxSpeed = 4, scrolling = false;
 
     this.margin = options.margin || -1;
     //this.scrolling = false;
@@ -431,14 +435,14 @@ function AutoScroller(elements) {
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
 
-    if (!isNaN(options.maxSpeed)) {
+    if(!isNaN(options.maxSpeed)){
         maxSpeed = options.maxSpeed;
     }
 
     this.autoScroll = boolean(options.autoScroll);
     this.syncMove = boolean(options.syncMove, false);
 
-    this.destroy = function () {
+    this.destroy = function() {
         window.removeEventListener('mousemove', pointCB, false);
         window.removeEventListener('touchmove', pointCB, false);
         window.removeEventListener('mousedown', onDown, false);
@@ -453,67 +457,54 @@ function AutoScroller(elements) {
         elements = [];
     };
 
-    this.add = function () {
-        for (var _len = arguments.length, element = Array(_len), _key = 0; _key < _len; _key++) {
-            element[_key] = arguments[_key];
-        }
+    this.add = function(){
+        var element = [], len = arguments.length;
+        while ( len-- ) element[ len ] = arguments[ len ];
 
-        addElements.apply(undefined, [elements].concat(element));
+        addElements.apply(void 0, [ elements ].concat( element ));
         return this;
     };
 
-    this.remove = function () {
-        for (var _len2 = arguments.length, element = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            element[_key2] = arguments[_key2];
-        }
+    this.remove = function(){
+        var element = [], len = arguments.length;
+        while ( len-- ) element[ len ] = arguments[ len ];
 
-        return removeElements.apply(undefined, [elements].concat(element));
+        return removeElements.apply(void 0, [ elements ].concat( element ));
     };
 
-    var hasWindow = null,
-        windowAnimationFrame = void 0;
+    var hasWindow = null, windowAnimationFrame;
 
-    if (Object.prototype.toString.call(elements) !== '[object Array]') {
+    if(Object.prototype.toString.call(elements) !== '[object Array]'){
         elements = [elements];
     }
 
-    (function (temp) {
+    (function(temp){
         elements = [];
-        temp.forEach(function (element) {
-            if (element === window) {
+        temp.forEach(function(element){
+            if(element === window){
                 hasWindow = window;
-            } else {
+            }else{
                 self.add(element);
             }
         });
-    })(elements);
+    }(elements));
 
     Object.defineProperties(this, {
         down: {
-            get: function get() {
-                return down;
-            }
+            get: function(){ return down; }
         },
         maxSpeed: {
-            get: function get() {
-                return maxSpeed;
-            }
+            get: function(){ return maxSpeed; }
         },
         point: {
-            get: function get() {
-                return point;
-            }
+            get: function(){ return point; }
         },
         scrolling: {
-            get: function get() {
-                return scrolling;
-            }
+            get: function(){ return scrolling; }
         }
     });
 
-    var n = 0,
-        current = null,
-        animationFrame = void 0;
+    var n = 0, current = null, animationFrame;
 
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
@@ -527,51 +518,49 @@ function AutoScroller(elements) {
 
     window.addEventListener('scroll', setScroll, true);
 
-    function setScroll(e) {
+    function setScroll(e){
 
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i] === e.target) {
+        for(var i=0; i<elements.length; i++){
+            if(elements[i] === e.target){
                 scrolling = true;
                 break;
             }
         }
 
-        if (scrolling) {
-            requestAnimationFrame(function () {
-                return scrolling = false;
-            });
+        if(scrolling){
+            requestAnimationFrame(function (){ return scrolling = false; });
         }
     }
 
-    function onDown() {
+    function onDown(){
         down = true;
     }
 
-    function onUp() {
+    function onUp(){
         down = false;
         cancelAnimationFrame(animationFrame);
         cancelAnimationFrame(windowAnimationFrame);
     }
 
-    function onMouseOut() {
+    function onMouseOut(){
         down = false;
     }
 
-    function getTarget(target) {
-        if (!target) {
+    function getTarget(target){
+        if(!target){
             return null;
         }
 
-        if (current === target) {
+        if(current === target){
             return target;
         }
 
-        if (hasElement(elements, target)) {
+        if(hasElement(elements, target)){
             return target;
         }
 
-        while (target = target.parentNode) {
-            if (hasElement(elements, target)) {
+        while(target = target.parentNode){
+            if(hasElement(elements, target)){
                 return target;
             }
         }
@@ -579,11 +568,11 @@ function AutoScroller(elements) {
         return null;
     }
 
-    function getElementUnderPoint() {
+    function getElementUnderPoint(){
         var underPoint = null;
 
-        for (var i = 0; i < elements.length; i++) {
-            if (inside(point, elements[i])) {
+        for(var i=0; i<elements.length; i++){
+            if(inside(point, elements[i])){
                 underPoint = elements[i];
             }
         }
@@ -591,44 +580,44 @@ function AutoScroller(elements) {
         return underPoint;
     }
 
-    function onMove(event) {
 
-        if (!self.autoScroll()) return;
+    function onMove(event){
 
-        if (event['dispatched']) {
-            return;
-        }
+        if(!self.autoScroll()) { return; }
 
-        var target = event.target,
-            body = document.body;
+        if(event['dispatched']){ return; }
 
-        if (current && !inside(point, current)) {
-            if (!self.scrollWhenOutside) {
+        var target = event.target, body = document.body;
+
+        if(current && !inside(point, current)){
+            if(!self.scrollWhenOutside){
                 current = null;
             }
         }
 
-        if (target && target.parentNode === body) {
+        if(target && target.parentNode === body){
             //The special condition to improve speed.
             target = getElementUnderPoint();
-        } else {
+        }else{
             target = getTarget(target);
 
-            if (!target) {
+            if(!target){
                 target = getElementUnderPoint();
             }
         }
 
-        if (target && target !== current) {
+
+        if(target && target !== current){
             current = target;
         }
 
-        if (hasWindow) {
+        if(hasWindow){
             cancelAnimationFrame(windowAnimationFrame);
             windowAnimationFrame = requestAnimationFrame(scrollWindow);
         }
 
-        if (!current) {
+
+        if(!current){
             return;
         }
 
@@ -636,16 +625,16 @@ function AutoScroller(elements) {
         animationFrame = requestAnimationFrame(scrollTick);
     }
 
-    function scrollWindow() {
+    function scrollWindow(){
         autoScroll(hasWindow);
 
         cancelAnimationFrame(windowAnimationFrame);
         windowAnimationFrame = requestAnimationFrame(scrollWindow);
     }
 
-    function scrollTick() {
+    function scrollTick(){
 
-        if (!current) {
+        if(!current){
             return;
         }
 
@@ -653,30 +642,38 @@ function AutoScroller(elements) {
 
         cancelAnimationFrame(animationFrame);
         animationFrame = requestAnimationFrame(scrollTick);
+
     }
 
-    function autoScroll(el) {
-        var rect = getClientRect(el),
-            scrollx = void 0,
-            scrolly = void 0;
 
-        if (point.x < rect.left + self.margin) {
-            scrollx = Math.floor(Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed);
-        } else if (point.x > rect.right - self.margin) {
-            scrollx = Math.ceil(Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed);
-        } else {
+    function autoScroll(el){
+        var rect = getClientRect(el), scrollx, scrolly;
+
+        if(point.x < rect.left + self.margin){
+            scrollx = Math.floor(
+                Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed
+            );
+        }else if(point.x > rect.right - self.margin){
+            scrollx = Math.ceil(
+                Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed
+            );
+        }else{
             scrollx = 0;
         }
 
-        if (point.y < rect.top + self.margin) {
-            scrolly = Math.floor(Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed);
-        } else if (point.y > rect.bottom - self.margin) {
-            scrolly = Math.ceil(Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed);
-        } else {
+        if(point.y < rect.top + self.margin){
+            scrolly = Math.floor(
+                Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed
+            );
+        }else if(point.y > rect.bottom - self.margin){
+            scrolly = Math.ceil(
+                Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed
+            );
+        }else{
             scrolly = 0;
         }
 
-        if (self.syncMove()) {
+        if(self.syncMove()){
             /*
             Notes about mousemove event dispatch.
             screen(X/Y) should need to be updated.
@@ -691,44 +688,47 @@ function AutoScroller(elements) {
             });
         }
 
-        setTimeout(function () {
+        setTimeout(function (){
 
-            if (scrolly) {
+            if(scrolly){
                 scrollY(el, scrolly);
             }
 
-            if (scrollx) {
+            if(scrollx){
                 scrollX(el, scrollx);
             }
+
         });
     }
 
-    function scrollY(el, amount) {
-        if (el === window) {
+    function scrollY(el, amount){
+        if(el === window){
             window.scrollTo(el.pageXOffset, el.pageYOffset + amount);
-        } else {
+        }else{
             el.scrollTop += amount;
         }
     }
 
-    function scrollX(el, amount) {
-        if (el === window) {
+    function scrollX(el, amount){
+        if(el === window){
             window.scrollTo(el.pageXOffset + amount, el.pageYOffset);
-        } else {
+        }else{
             el.scrollLeft += amount;
         }
     }
+
 }
 
-function AutoScrollerFactory(element, options) {
+function AutoScrollerFactory(element, options){
     return new AutoScroller(element, options);
 }
 
-function inside(point, el, rect) {
-    if (!rect) {
+function inside(point, el, rect){
+    if(!rect){
         return pointInside(point, el);
-    } else {
-        return point.y > rect.top && point.y < rect.bottom && point.x > rect.left && point.x < rect.right;
+    }else{
+        return (point.y > rect.top && point.y < rect.bottom &&
+                point.x > rect.left && point.x < rect.right);
     }
 }
 
