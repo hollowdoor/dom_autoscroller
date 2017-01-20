@@ -48,6 +48,9 @@ function AutoScroller(elements, options = {}){
         window.removeEventListener('mouseup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
 
+        window.removeEventListener('mousemove', onMove, false);
+        window.removeEventListener('touchmove', onMove, false);
+
         window.removeEventListener('scroll', setScroll, true);
         elements = [];
     };

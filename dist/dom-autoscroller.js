@@ -295,7 +295,7 @@ var polyfill = function () {
   };
 }();
 
-var index$1 = typeof Array.from === 'function' ? Array.from : polyfill;
+var index = typeof Array.from === 'function' ? Array.from : polyfill;
 
 /**
  * isArray
@@ -326,13 +326,15 @@ var str = Object.prototype.toString;
  * @return {bool}
  */
 
-var index$2 = isArray || function (val) {
+var index$1 = isArray || function (val) {
   return !!val && '[object Array]' == str.call(val);
 };
 
 function indexOfElement(elements, element) {
     element = resolveElement(element, true);
-    if (!isElement(element)) return -1;
+    if (!isElement(element)) {
+        return -1;
+    }
     for (var i = 0; i < elements.length; i++) {
         if (elements[i] === element) {
             return i;
@@ -347,19 +349,21 @@ function hasElement(elements, element) {
 
 function domListOf(arr) {
 
-    if (!arr) return [];
+    if (!arr) {
+        return [];
+    }
 
     try {
         if (typeof arr === 'string') {
-            return index$1(document.querySelectorAll(arr));
-        } else if (index$2(arr)) {
+            return index(document.querySelectorAll(arr));
+        } else if (index$1(arr)) {
             return arr.map(resolveElement);
         } else {
             if (typeof arr.length === 'undefined') {
                 return [resolveElement(arr)];
             }
 
-            return index$1(arr, resolveElement);
+            return index(arr, resolveElement);
         }
     } catch (e) {
         throw new Error(e);
@@ -369,31 +373,35 @@ function domListOf(arr) {
 function pushElements(elements, toAdd) {
 
     for (var i = 0; i < toAdd.length; i++) {
-        if (!hasElement(elements, toAdd[i])) elements.push(toAdd[i]);
+        if (!hasElement(elements, toAdd[i])) {
+            elements.push(toAdd[i]);
+        }
     }
 
     return toAdd;
 }
 
 function addElements(elements) {
-    for (var _len2 = arguments.length, toAdd = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        toAdd[_key2 - 1] = arguments[_key2];
-    }
+    var toAdd = [],
+        len = arguments.length - 1;
+    while (len-- > 0) toAdd[len] = arguments[len + 1];
 
     toAdd = toAdd.map(resolveElement);
     return pushElements(elements, toAdd);
 }
 
 function removeElements(elements) {
-    for (var _len3 = arguments.length, toRemove = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-        toRemove[_key3 - 1] = arguments[_key3];
-    }
+    var toRemove = [],
+        len = arguments.length - 1;
+    while (len-- > 0) toRemove[len] = arguments[len + 1];
 
     return toRemove.map(resolveElement).reduce(function (last, e) {
 
-        var index = indexOfElement(elements, e);
+        var index$$1 = indexOfElement(elements, e);
 
-        if (index !== -1) return last.concat(elements.splice(index, 1));
+        if (index$$1 !== -1) {
+            return last.concat(elements.splice(index$$1, 1));
+        }
         return last;
     }, []);
 }
@@ -408,12 +416,12 @@ function resolveElement(element, noThrow) {
     }
 
     if (!isElement(element) && !noThrow) {
-        throw new TypeError(element + ' is not a DOM element.');
+        throw new TypeError(element + " is not a DOM element.");
     }
     return element;
 }
 
-var index$3 = function createPointCB(object, options) {
+function createPointCB(object, options) {
 
     // A persistent object (as opposed to returned object) is used to save memory
     // This is good to prevent layout thrashing, or for games, and such
@@ -427,15 +435,13 @@ var index$3 = function createPointCB(object, options) {
 
     options = options || {};
 
-    var allowUpdate;
+    var allowUpdate = boolean(options.allowUpdate, true);
 
-    if (typeof options.allowUpdate === 'function') {
+    /*if(typeof options.allowUpdate === 'function'){
         allowUpdate = options.allowUpdate;
-    } else {
-        allowUpdate = function () {
-            return true;
-        };
-    }
+    }else{
+        allowUpdate = function(){return true;};
+    }*/
 
     return function pointCB(event) {
 
@@ -454,8 +460,10 @@ var index$3 = function createPointCB(object, options) {
         if (event.targetTouches) {
             object.x = event.targetTouches[0].clientX;
             object.y = event.targetTouches[0].clientY;
-            object.pageX = event.pageX;
-            object.pageY = event.pageY;
+            object.pageX = event.targetTouches[0].pageX;
+            object.pageY = event.targetTouches[0].pageY;
+            object.screenX = event.targetTouches[0].screenX;
+            object.screenY = event.targetTouches[0].screenY;
         } else {
 
             // If pageX/Y aren't available and clientX/Y are,
@@ -482,11 +490,17 @@ var index$3 = function createPointCB(object, options) {
 
             object.x = event.clientX;
             object.y = event.clientY;
+
+            object.screenX = event.screenX;
+            object.screenY = event.screenY;
         }
+
+        object.clientX = object.x;
+        object.clientY = object.y;
     };
 
     //NOTE Remember accessibility, Aria roles, and labels.
-};
+}
 
 function createWindowRect() {
     var props = {
@@ -679,7 +693,7 @@ function AutoScroller(elements) {
     this.scrollWhenOutside = options.scrollWhenOutside || false;
 
     var point = {},
-        pointCB = index$3(point),
+        pointCB = createPointCB(point),
         dispatcher = createDispatcher(),
         down = false;
 
@@ -700,6 +714,9 @@ function AutoScroller(elements) {
         window.removeEventListener('touchstart', onDown, false);
         window.removeEventListener('mouseup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
+
+        window.removeEventListener('mousemove', onMove, false);
+        window.removeEventListener('touchmove', onMove, false);
 
         window.removeEventListener('scroll', setScroll, true);
         elements = [];
