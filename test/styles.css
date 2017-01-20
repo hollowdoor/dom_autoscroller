@@ -1,0 +1,31 @@
+body{
+    background-color: #968096;
+}
+#list-container{
+    background-color: green;
+    cursor: default;
+    overflow-y: auto;
+    height: 100px;
+    padding: 10px;
+}
+#list{
+    padding: 10px;
+    margin: 10px;
+}
+#container2{
+    background-color: red;
+    cursor: default;
+    overflow-x: auto;
+    width: 250px;
+    padding: 20px;
+    white-space: nowrap;
+}
+#hlist{
+    padding: 10px;
+    margin: 10px;
+
+}
+#hlist li{
+    display: inline;
+}
+.gu-mirror{position:fixed!important;margin:0!important;z-index:9999!important;opacity:.8;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";filter:alpha(opacity=80)}.gu-hide{display:none!important}.gu-unselectable{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important}.gu-transit{opacity:.2;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";filter:alpha(opacity=20)}
