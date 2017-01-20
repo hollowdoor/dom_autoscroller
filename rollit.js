@@ -34,12 +34,12 @@ rollup.rollup({
 rollup.rollup({
     entry: 'src/index.js',
     plugins: [
-        babel(),
         nodeResolve({
             jsnext: true,
             main: true
         }),
-        commonjs()
+        commonjs(),
+        babel()
     ],
 }).then((bundle)=>{
     let b = bundle.write({
@@ -65,11 +65,11 @@ rollup.rollup({
 rollup.rollup({
     entry: 'test/src.js',
     plugins: [
-        babel(),
         nodeResolve({
             main: true
         }),
-        commonjs()
+        commonjs(),
+        babel()        
     ]
 }).then(bundle=>{
     //console.log('what')

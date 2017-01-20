@@ -11,7 +11,7 @@ function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-var atoa$1 = function atoa$1(a, n) {
+var atoa$1 = function atoa(a, n) {
   return Array.prototype.slice.call(a, n);
 };
 
@@ -33,7 +33,7 @@ var ticky$1 = tick;
 
 var ticky = ticky$1;
 
-var debounce$1 = function debounce$1(fn, args, ctx) {
+var debounce$1 = function debounce(fn, args, ctx) {
   if (!fn) {
     return;
   }
@@ -45,7 +45,7 @@ var debounce$1 = function debounce$1(fn, args, ctx) {
 var atoa = atoa$1;
 var debounce = debounce$1;
 
-var emitter$1 = function emitter$1(thing, options) {
+var emitter$1 = function emitter(thing, options) {
   var opts = options || {};
   var evt = {};
   if (thing === undefined) {
@@ -91,7 +91,7 @@ var emitter$1 = function emitter$1(thing, options) {
       if (type === 'error' && opts.throws !== false && !et.length) {
         throw args.length === 1 ? args[0] : args;
       }
-      et.forEach(function emitter$1(listen) {
+      et.forEach(function emitter(listen) {
         if (opts.async) {
           debounce(listen, args, ctx);
         } else {
@@ -1054,6 +1054,7 @@ function string(func, def) {
 exports.boolean = boolean;
 exports.integer = integer;
 exports.string = string;
+
 });
 
 var animationFramePolyfill_cjs = createCommonjsModule(function (module, exports) {
@@ -1368,7 +1369,7 @@ var index$6 = isArray || function (val) {
   return !!val && '[object Array]' == str.call(val);
 };
 
-var require$$2$1 = ( index$3 && index$3['default'] ) || index$3;
+var require$$2$1 = ( index$3 && index$2 ) || index$3;
 
 var bundle$4 = createCommonjsModule(function (module, exports) {
 'use strict';
@@ -1483,6 +1484,7 @@ exports.concatElementLists = concatElementLists;
 exports.addElements = addElements;
 exports.removeElements = removeElements;
 exports.resolveElement = resolveElement;
+
 });
 
 var index$8 = function createPointCB(object, options) {
@@ -1622,6 +1624,7 @@ function pointInside(point, el) {
 exports.createPointCB = createPointCb;
 exports.getClientRect = getClientRect;
 exports.pointInside = pointInside;
+
 });
 
 var objectCreate = void 0;
@@ -1809,6 +1812,9 @@ function AutoScroller(elements) {
         window.removeEventListener('touchstart', onDown, false);
         window.removeEventListener('mouseup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
+
+        window.removeEventListener('mousemove', onMove, false);
+        window.removeEventListener('touchmove', onMove, false);
 
         window.removeEventListener('scroll', setScroll, true);
         elements = [];
