@@ -40,7 +40,7 @@ function AutoScroller(elements, options = {}){
     this.autoScroll = boolean(options.autoScroll);
     this.syncMove = boolean(options.syncMove, false);
 
-    this.destroy = function() {
+    this.destroy = function(forceCleanAnimation) {
         window.removeEventListener('mousemove', pointCB, false);
         window.removeEventListener('touchmove', pointCB, false);
         window.removeEventListener('mousedown', onDown, false);
@@ -53,6 +53,9 @@ function AutoScroller(elements, options = {}){
 
         window.removeEventListener('scroll', setScroll, true);
         elements = [];
+        if(forceCleanAnimation){
+          cleanAnimation();
+        }
     };
 
     this.add = function(...element){
@@ -130,10 +133,12 @@ function AutoScroller(elements, options = {}){
 
     function onUp(){
         down = false;
-        cancelFrame(animationFrame);
-        cancelFrame(windowAnimationFrame)
+        cleanAnimation();
     }
-
+    function cleanAnimation(){
+      cancelFrame(animationFrame);
+      cancelFrame(windowAnimationFrame);
+    }
     function onMouseOut(){
         down = false;
     }
