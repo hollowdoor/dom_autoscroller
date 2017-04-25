@@ -238,9 +238,9 @@ Auto Scroller Methods
 
 The function you set in the constructor options for `options.autoScroll`.
 
-### destroy
+### destroy(forceCleanAnimation)
 
-Remove all event listeners needed to be able track the pointer.
+Remove all event listeners needed to be able to track the pointer. If destroy Auto Scroller meanwhile scrolling then just call `.destroy(true)` to force to stop scrolling animation. Call `.destroy()` and `.destroy(false)` is the same behaviours.
 
 Undocumented methods
 --------------------
