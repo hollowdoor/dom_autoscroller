@@ -12,7 +12,15 @@ const external = Object.keys(pack.dependencies || {});
 
 rollup.rollup({
     entry: 'src/index.js',
-    plugins: [buble()],
+    plugins: [
+        nodeResolve({
+            jsnext: true,
+            main: true,
+            module: true
+        }),
+        commonjs(),
+        buble()
+    ],
     external: external
 }).then((bundle)=>{
     bundle.write({

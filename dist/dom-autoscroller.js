@@ -75,18 +75,6 @@ var cancelAnimationFrame = function () {
   return window.cancelAnimationFrame.bind(window);
 }();
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-/**
- * Returns `true` if provided input is Element.
- * @name isElement
- * @param {*} [input]
- * @returns {boolean}
- */
-var isElement = function (input) {
-  return input != null && (typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object' && input.nodeType === 1 && _typeof(input.style) === 'object' && _typeof(input.ownerDocument) === 'object';
-};
-
 // Production steps of ECMA-262, Edition 6, 22.1.2.1
 // Reference: http://www.ecma-international.org/ecma-262/6.0/#sec-array.from
 var polyfill = (function() {
@@ -338,9 +326,28 @@ var index$1 = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
+/**
+ * Returns `true` if provided input is Element.
+ * @name isElement
+ * @param {*} [input]
+ * @returns {boolean}
+ */
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+/**
+ * Returns `true` if provided input is Element.
+ * @name isElement
+ * @param {*} [input]
+ * @returns {boolean}
+ */
+var isElement$1 = function (input) {
+  return input != null && (typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object' && input.nodeType === 1 && _typeof(input.style) === 'object' && _typeof(input.ownerDocument) === 'object';
+};
+
 function indexOfElement(elements, element){
     element = resolveElement(element, true);
-    if(!isElement(element)) { return -1; }
+    if(!isElement$1(element)) { return -1; }
     for(var i=0; i<elements.length; i++){
         if(elements[i] === element){
             return i;
@@ -422,7 +429,7 @@ function resolveElement(element, noThrow){
 
     }
 
-    if(!isElement(element) && !noThrow){
+    if(!isElement$1(element) && !noThrow){
         throw new TypeError((element + " is not a DOM element."));
     }
     return element;

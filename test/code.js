@@ -1027,22 +1027,6 @@ var cancelAnimationFrame = exports.cancelAnimationFrame = function () {
 }();
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-/**
- * Returns `true` if provided input is Element.
- * @name isElement
- * @param {*} [input]
- * @returns {boolean}
- */
-var index$2 = function (input) {
-  return input != null && (typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object' && input.nodeType === 1 && _typeof(input.style) === 'object' && _typeof(input.ownerDocument) === 'object';
-};
-
-var index$3 = Object.freeze({
-	default: index$2
-});
-
 // Production steps of ECMA-262, Edition 6, 22.1.2.1
 // Reference: http://www.ecma-international.org/ecma-262/6.0/#sec-array.from
 var polyfill = (function() {
@@ -1256,7 +1240,7 @@ var polyfill = (function() {
   };
 })();
 
-var index$4 = (typeof Array.from === 'function' ?
+var index$2 = (typeof Array.from === 'function' ?
   Array.from :
   polyfill
 );
@@ -1290,11 +1274,27 @@ var str = Object.prototype.toString;
  * @return {bool}
  */
 
-var index$6 = isArray || function (val) {
+var index$4 = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-var require$$2$1 = ( index$3 && index$2 ) || index$3;
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+/**
+ * Returns `true` if provided input is Element.
+ * @name isElement
+ * @param {*} [input]
+ * @returns {boolean}
+ */
+var index$6 = function (input) {
+  return input != null && (typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object' && input.nodeType === 1 && _typeof(input.style) === 'object' && _typeof(input.ownerDocument) === 'object';
+};
+
+var index$7 = Object.freeze({
+	default: index$6
+});
+
+var require$$0$5 = ( index$7 && index$6 ) || index$7;
 
 var bundle$4 = createCommonjsModule(function (module, exports) {
 'use strict';
@@ -1303,105 +1303,143 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var isElement = _interopDefault(require$$2$1);
-var arrayFrom = _interopDefault(index$4);
-var isArray = _interopDefault(index$6);
+var arrayFrom = _interopDefault(index$2);
+var isArray = _interopDefault(index$4);
+var isElement = _interopDefault(require$$0$5);
 
-function indexOfElement(elements, element) {
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+/**
+ * Returns `true` if provided input is Element.
+ * @name isElement
+ * @param {*} [input]
+ * @returns {boolean}
+ */
+var isElement$1 = function (input) {
+  return input != null && (typeof input === 'undefined' ? 'undefined' : _typeof(input)) === 'object' && input.nodeType === 1 && _typeof(input.style) === 'object' && _typeof(input.ownerDocument) === 'object';
+};
+
+function select(selector){
+    if(typeof selector === 'string'){
+        try{
+            return document.querySelector(selector);
+        }catch(e){
+            throw e;
+        }
+    }else if(isElement(selector)){
+        return selector;
+    }
+}
+
+function selectAll(selector){
+    if(typeof selector === 'string'){
+        return Array.prototype.slice.apply(
+            document.querySelectorAll(selector)
+        );
+    }else if(isArray(selector)){
+        return selector.map(select);
+    }else if('length' in selector){
+        return arrayFrom(selector).map(select);
+    }
+}
+
+function indexOfElement(elements, element){
     element = resolveElement(element, true);
-    if (!isElement(element)) { return -1; }
-    for (var i = 0; i < elements.length; i++) {
-        if (elements[i] === element) {
+    if(!isElement$1(element)) { return -1; }
+    for(var i=0; i<elements.length; i++){
+        if(elements[i] === element){
             return i;
         }
     }
     return -1;
 }
 
-function hasElement(elements, element) {
+function hasElement(elements, element){
     return -1 !== indexOfElement(elements, element);
 }
 
-function domListOf(arr) {
+function domListOf(arr){
 
-    if (!arr) { return []; }
+    if(!arr) { return []; }
 
-    try {
-        if (typeof arr === 'string') {
+    try{
+        if(typeof arr === 'string'){
             return arrayFrom(document.querySelectorAll(arr));
-        } else if (isArray(arr)) {
+        }else if(isArray(arr)){
             return arr.map(resolveElement);
-        } else {
-            if (typeof arr.length === 'undefined') {
+        }else{
+            if(typeof arr.length === 'undefined'){
                 return [resolveElement(arr)];
             }
 
             return arrayFrom(arr, resolveElement);
+
         }
-    } catch (e) {
+    }catch(e){
         throw new Error(e);
     }
+
 }
 
-function concatElementLists() {
+function concatElementLists(){
     var arguments$1 = arguments;
 
-    for (var _len = arguments.length, lists = Array(_len), _key = 0; _key < _len; _key++) {
-        lists[_key] = arguments$1[_key];
-    }
+    var lists = [], len = arguments.length;
+    while ( len-- ) { lists[ len ] = arguments$1[ len ]; }
 
-    return lists.reduce(function (last, list) {
+    return lists.reduce(function (last, list){
         return list.length ? last : last.concat(domListOf(list));
     }, []);
 }
 
-function pushElements(elements, toAdd) {
+function pushElements(elements, toAdd){
 
-    for (var i = 0; i < toAdd.length; i++) {
-        if (!hasElement(elements, toAdd[i])) { elements.push(toAdd[i]); }
+    for(var i=0; i<toAdd.length; i++){
+        if(!hasElement(elements, toAdd[i]))
+            { elements.push(toAdd[i]); }
     }
 
     return toAdd;
 }
 
-function addElements(elements) {
+function addElements(elements){
     var arguments$1 = arguments;
 
-    for (var _len2 = arguments.length, toAdd = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        toAdd[_key2 - 1] = arguments$1[_key2];
-    }
+    var toAdd = [], len = arguments.length - 1;
+    while ( len-- > 0 ) { toAdd[ len ] = arguments$1[ len + 1 ]; }
 
     toAdd = toAdd.map(resolveElement);
     return pushElements(elements, toAdd);
 }
 
-function removeElements(elements) {
+function removeElements(elements){
     var arguments$1 = arguments;
 
-    for (var _len3 = arguments.length, toRemove = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-        toRemove[_key3 - 1] = arguments$1[_key3];
-    }
+    var toRemove = [], len = arguments.length - 1;
+    while ( len-- > 0 ) { toRemove[ len ] = arguments$1[ len + 1 ]; }
 
-    return toRemove.map(resolveElement).reduce(function (last, e) {
+    return toRemove.map(resolveElement).reduce(function (last, e){
 
         var index = indexOfElement(elements, e);
 
-        if (index !== -1) { return last.concat(elements.splice(index, 1)); }
+        if(index !== -1)
+            { return last.concat(elements.splice(index, 1)); }
         return last;
     }, []);
 }
 
-function resolveElement(element, noThrow) {
-    if (typeof element === 'string') {
-        try {
+function resolveElement(element, noThrow){
+    if(typeof element === 'string'){
+        try{
             return document.querySelector(element);
-        } catch (e) {
+        }catch(e){
             throw e;
         }
+
     }
 
-    if (!isElement(element) && !noThrow) {
-        throw new TypeError(element + ' is not a DOM element.');
+    if(!isElement$1(element) && !noThrow){
+        throw new TypeError((element + " is not a DOM element."));
     }
     return element;
 }
@@ -1413,10 +1451,14 @@ exports.concatElementLists = concatElementLists;
 exports.addElements = addElements;
 exports.removeElements = removeElements;
 exports.resolveElement = resolveElement;
+exports.select = select;
+exports.selectAll = selectAll;
 
 });
 
-var index$8 = function createPointCB(object, options){
+var typeFunc$1 = bundle$2;
+
+function createPointCB$1(object, options) {
 
     // A persistent object (as opposed to returned object) is used to save memory
     // This is good to prevent layout thrashing, or for games, and such
@@ -1430,34 +1472,36 @@ var index$8 = function createPointCB(object, options){
 
     options = options || {};
 
-    var allowUpdate;
+    var allowUpdate = typeFunc$1.boolean(options.allowUpdate, true);
 
-    if(typeof options.allowUpdate === 'function'){
+    /*if(typeof options.allowUpdate === 'function'){
         allowUpdate = options.allowUpdate;
     }else{
         allowUpdate = function(){return true;};
-    }
+    }*/
 
-    return function pointCB(event){
+    return function pointCB(event) {
 
         event = event || window.event; // IE-ism
         object.target = event.target || event.srcElement || event.originalTarget;
         object.element = this;
         object.type = event.type;
 
-        if(!allowUpdate(event)){
+        if (!allowUpdate(event)) {
             return;
         }
 
         // Support touch
         // http://www.creativebloq.com/javascript/make-your-site-work-touch-devices-51411644
 
-        if(event.targetTouches){
+        if (event.targetTouches) {
             object.x = event.targetTouches[0].clientX;
             object.y = event.targetTouches[0].clientY;
-            object.pageX = event.pageX;
-            object.pageY = event.pageY;
-        }else{
+            object.pageX = event.targetTouches[0].pageX;
+            object.pageY = event.targetTouches[0].pageY;
+            object.screenX = event.targetTouches[0].screenX;
+            object.screenY = event.targetTouches[0].screenY;
+        } else {
 
             // If pageX/Y aren't available and clientX/Y are,
             // calculate pageX/Y - logic taken from jQuery.
@@ -1465,17 +1509,13 @@ var index$8 = function createPointCB(object, options){
             // NOTE Hopefully this can be removed soon.
 
             if (event.pageX === null && event.clientX !== null) {
-                var eventDoc = (event.target && event.target.ownerDocument) || document;
+                var eventDoc = event.target && event.target.ownerDocument || document;
                 var doc = eventDoc.documentElement;
                 var body = eventDoc.body;
 
-                object.pageX = event.clientX +
-                  (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-                  (doc && doc.clientLeft || body && body.clientLeft || 0);
-                object.pageY = event.clientY +
-                  (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-                  (doc && doc.clientTop  || body && body.clientTop  || 0 );
-            }else{
+                object.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
+                object.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0);
+            } else {
                 object.pageX = event.pageX;
                 object.pageY = event.pageY;
             }
@@ -1487,17 +1527,24 @@ var index$8 = function createPointCB(object, options){
 
             object.x = event.clientX;
             object.y = event.clientY;
+
+            object.screenX = event.screenX;
+            object.screenY = event.screenY;
         }
 
+        object.clientX = object.x;
+        object.clientY = object.y;
     };
 
     //NOTE Remember accessibility, Aria roles, and labels.
-};
+}
 
 /*
 git remote add origin https://github.com/hollowdoor/create_point_cb.git
 git push -u origin master
 */
+
+var bundle$8 = createPointCB$1;
 
 var bundle$6 = createCommonjsModule(function (module, exports) {
 'use strict';
@@ -1506,7 +1553,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var createPointCb = _interopDefault(index$8);
+var createPointCb = _interopDefault(bundle$8);
 
 function createWindowRect() {
     var props = {
@@ -1697,7 +1744,7 @@ function setSpecial(e, data) {
 http://marcgrabanski.com/simulating-mouse-click-events-in-javascript/
 */
 
-var bundle$8 = createDispatcher;
+var bundle$10 = createDispatcher;
 
 function _interopDefault$1 (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
@@ -1705,7 +1752,7 @@ var typeFunc = bundle$2;
 var animationFramePolyfill = animationFramePolyfill_cjs;
 var domSet = bundle$4;
 var domPlane = bundle$6;
-var mousemoveDispatcher = _interopDefault$1(bundle$8);
+var mousemoveDispatcher = _interopDefault$1(bundle$10);
 
 function AutoScroller(elements, options){
     if ( options === void 0 ) { options = {}; }
@@ -1732,7 +1779,7 @@ function AutoScroller(elements, options){
     this.autoScroll = typeFunc.boolean(options.autoScroll);
     this.syncMove = typeFunc.boolean(options.syncMove, false);
 
-    this.destroy = function() {
+    this.destroy = function(forceCleanAnimation) {
         window.removeEventListener('mousemove', pointCB, false);
         window.removeEventListener('touchmove', pointCB, false);
         window.removeEventListener('mousedown', onDown, false);
@@ -1745,6 +1792,9 @@ function AutoScroller(elements, options){
 
         window.removeEventListener('scroll', setScroll, true);
         elements = [];
+        if(forceCleanAnimation){
+          cleanAnimation();
+        }
     };
 
     this.add = function(){
@@ -1832,10 +1882,12 @@ function AutoScroller(elements, options){
 
     function onUp(){
         down = false;
-        animationFramePolyfill.cancelAnimationFrame(animationFrame);
-        animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
+        cleanAnimation();
     }
-
+    function cleanAnimation(){
+      animationFramePolyfill.cancelAnimationFrame(animationFrame);
+      animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
+    }
     function onMouseOut(){
         down = false;
     }
