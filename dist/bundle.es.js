@@ -35,6 +35,7 @@ function AutoScroller(elements, options){
         window.removeEventListener('mousedown', onDown, false);
         window.removeEventListener('touchstart', onDown, false);
         window.removeEventListener('mouseup', onUp, false);
+        window.removeEventListener('pointerup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
 
         window.removeEventListener('mousemove', onMove, false);
@@ -99,6 +100,7 @@ function AutoScroller(elements, options){
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
     window.addEventListener('mouseup', onUp, false);
+    window.addEventListener('pointerup', onUp, false);
     window.addEventListener('touchend', onUp, false);
 
     window.addEventListener('mousemove', onMove, false);
