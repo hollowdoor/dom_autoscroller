@@ -24,6 +24,10 @@ function AutoScroller(elements, options = {}){
     this.margin = options.margin || -1;
     //this.scrolling = false;
     this.scrollWhenOutside = options.scrollWhenOutside || false;
+    // those two X and Y options might be merged together, even with the original scrollWhenOutside
+    // for now, all are kept for compatibility reasons
+    this.scrollWhenOutsideX = options.scrollWhenOutsideX == undefined ? this.scrollWhenOutside : options.scrollWhenOutsideX;
+    this.scrollWhenOutsideY = options.scrollWhenOutsideY == undefined ? this.scrollWhenOutside : options.scrollWhenOutsideY;
 
     let point = {},
         pointCB = createPointCB(point),
@@ -197,7 +201,7 @@ function AutoScroller(elements, options = {}){
         let target = event.target, body = document.body;
 
         if(current && !inside(point, current)){
-            if(!self.scrollWhenOutside){
+            if(!self.scrollWhenOutside && !self.scrollWhenOutsideX && !self.scrollWhenOutsideY){
                 current = null;
             }
         }
@@ -256,27 +260,14 @@ function AutoScroller(elements, options = {}){
     function autoScroll(el){
         let rect = getRect(el), scrollx, scrolly;
 
-        if(point.x < rect.left + self.margin){
-            scrollx = Math.floor(
-                Math.max(-1, (point.x - rect.left) / self.margin - 1) * self.maxSpeed
-            );
-        }else if(point.x > rect.right - self.margin){
-            scrollx = Math.ceil(
-                Math.min(1, (point.x - rect.right) / self.margin + 1) * self.maxSpeed
-            );
-        }else{
-            scrollx = 0;
-        }
+        scrollx = deltaX(point, rect, self);
+        scrolly = deltaY(point, rect, self);
 
-        if(point.y < rect.top + self.margin){
-            scrolly = Math.floor(
-                Math.max(-1, (point.y - rect.top) / self.margin - 1) * self.maxSpeed
-            );
-        }else if(point.y > rect.bottom - self.margin){
-            scrolly = Math.ceil(
-                Math.min(1, (point.y - rect.bottom) / self.margin + 1) * self.maxSpeed
-            );
-        }else{
+        const horizontallyInside = point.x >= rect.left && point.x <= rect.right;
+        const verticallyInside = point.y >= rect.top && point.y <= rect.bottom;
+        
+        if (!self.scrollWhenOutsideX && !horizontallyInside || !self.scrollWhenOutsideY && !verticallyInside) {
+            scrollx = 0;
             scrolly = 0;
         }
 
@@ -306,6 +297,32 @@ function AutoScroller(elements, options = {}){
             }
 
         });
+    }
+
+    function deltaX(point, rect, autoscroller) {
+        if(point.x < rect.left + autoscroller.margin){
+            return Math.floor(
+                Math.max(-1, (point.x - rect.left) / autoscroller.margin - 1) * autoscroller.maxSpeed
+            );
+        }else if(point.x > rect.right - autoscroller.margin){
+            return Math.ceil(
+                Math.min(1, (point.x - rect.right) / autoscroller.margin + 1) * autoscroller.maxSpeed
+            );
+        }
+        return 0;
+    }
+
+    function deltaY(point, rect, autoscroller) {
+        if(point.y < rect.top + autoscroller.margin){
+            return Math.floor(
+                Math.max(-1, (point.y - rect.top) / autoscroller.margin - 1) * autoscroller.maxSpeed
+            );
+        }else if(point.y > rect.bottom - autoscroller.margin){
+            return Math.ceil(
+                Math.min(1, (point.y - rect.bottom) / autoscroller.margin + 1) * autoscroller.maxSpeed
+            );
+        }
+        return 0;
     }
 
     function scrollY(el, amount){
