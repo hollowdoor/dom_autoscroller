@@ -1767,7 +1767,8 @@ function AutoScroller(elements, options){
     var point = {},
         pointCB = domPlane.createPointCB(point),
         dispatcher = mousemoveDispatcher(),
-        down = false;
+        down = false,
+        dnd = false;
 
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
@@ -1786,8 +1787,10 @@ function AutoScroller(elements, options){
         window.removeEventListener('dragover', pointCB, false);
         window.removeEventListener('mousedown', onDown, false);
         window.removeEventListener('touchstart', onDown, false);
+        window.removeEventListener('dragstart', onDNDStart, false);
         window.removeEventListener('mouseup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
+        window.removeEventListener('dragend', onDNDEnd, false);
         window.removeEventListener('pointerup', onUp, false);
         window.removeEventListener('mouseleave', onMouseOut, false);
 
@@ -1842,6 +1845,9 @@ function AutoScroller(elements, options){
         down: {
             get: function(){ return down; }
         },
+        dnd: {
+            get: function() { return dnd }
+        },
         maxSpeed: {
             get: function(){ return maxSpeed; }
         },
@@ -1857,8 +1863,11 @@ function AutoScroller(elements, options){
 
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
+    window.addEventListener('dragstart', onDNDStart, false);
     window.addEventListener('mouseup', onUp, false);
     window.addEventListener('touchend', onUp, false);
+    window.addEventListener('dragend', onDNDEnd, false);
+
 
     /*
     IE does not trigger mouseup event when scrolling.
@@ -1898,6 +1907,16 @@ function AutoScroller(elements, options){
         down = false;
         cleanAnimation();
     }
+
+    function onDNDStart() {
+        dnd = true;
+    }
+
+    function onDNDEnd() {
+        dnd = false;
+        cleanAnimation();
+    }
+
     function cleanAnimation(){
       animationFramePolyfill.cancelAnimationFrame(animationFrame);
       animationFramePolyfill.cancelAnimationFrame(windowAnimationFrame);
