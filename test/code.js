@@ -1791,6 +1791,7 @@ function AutoScroller(elements, options){
         window.removeEventListener('mouseup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
         window.removeEventListener('dragend', onDNDEnd, false);
+        window.removeEventListener('drop', onDNDEnd, false);
         window.removeEventListener('pointerup', onUp, false);
         window.removeEventListener('mouseleave', onMouseOut, false);
 
