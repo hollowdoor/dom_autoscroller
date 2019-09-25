@@ -32,6 +32,7 @@ function AutoScroller(elements, options = {}){
 
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
+    window.addEventListener('dragover', pointCB, false);
 
     if(!isNaN(options.maxSpeed)){
         maxSpeed = options.maxSpeed;
@@ -43,6 +44,7 @@ function AutoScroller(elements, options = {}){
     this.destroy = function(forceCleanAnimation) {
         window.removeEventListener('mousemove', pointCB, false);
         window.removeEventListener('touchmove', pointCB, false);
+        window.removeEventListener('dragover', pointCB, false);
         window.removeEventListener('mousedown', onDown, false);
         window.removeEventListener('touchstart', onDown, false);
         window.removeEventListener('mouseup', onUp, false);
@@ -52,6 +54,7 @@ function AutoScroller(elements, options = {}){
 
         window.removeEventListener('mousemove', onMove, false);
         window.removeEventListener('touchmove', onMove, false);
+        window.removeEventListener('dragover', onMove, false);
 
         window.removeEventListener('scroll', setScroll, true);
         elements = [];
@@ -118,6 +121,7 @@ function AutoScroller(elements, options = {}){
 
     window.addEventListener('mousemove', onMove, false);
     window.addEventListener('touchmove', onMove, false);
+    window.addEventListener('dragover', onMove, false);
 
     window.addEventListener('mouseleave', onMouseOut, false);
 
