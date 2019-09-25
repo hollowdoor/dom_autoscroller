@@ -117,7 +117,7 @@ function AutoScroller(elements, options){
     window.addEventListener('mouseup', onUp, false);
     window.addEventListener('touchend', onUp, false);
     window.addEventListener('dragend', onDNDEnd, false);
-
+    window.addEventListener('drop', onDNDEnd, false);
 
     /*
     IE does not trigger mouseup event when scrolling.
