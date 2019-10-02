@@ -708,10 +708,12 @@ function AutoScroller(elements, options){
     var point = {},
         pointCB = createPointCB(point),
         dispatcher = createDispatcher(),
-        down = false;
+        down = false,
+        dnd = false;
 
     window.addEventListener('mousemove', pointCB, false);
     window.addEventListener('touchmove', pointCB, false);
+    window.addEventListener('dragover', pointCB, false);
 
     if(!isNaN(options.maxSpeed)){
         maxSpeed = options.maxSpeed;
@@ -723,15 +725,20 @@ function AutoScroller(elements, options){
     this.destroy = function(forceCleanAnimation) {
         window.removeEventListener('mousemove', pointCB, false);
         window.removeEventListener('touchmove', pointCB, false);
+        window.removeEventListener('dragover', pointCB, false);
         window.removeEventListener('mousedown', onDown, false);
         window.removeEventListener('touchstart', onDown, false);
+        window.removeEventListener('dragstart', onDNDStart, false);
         window.removeEventListener('mouseup', onUp, false);
         window.removeEventListener('touchend', onUp, false);
+        window.removeEventListener('dragend', onDNDEnd, false);
+        window.removeEventListener('drop', onDNDEnd, false);
         window.removeEventListener('pointerup', onUp, false);
         window.removeEventListener('mouseleave', onMouseOut, false);
 
         window.removeEventListener('mousemove', onMove, false);
         window.removeEventListener('touchmove', onMove, false);
+        window.removeEventListener('dragover', onMove, false);
 
         window.removeEventListener('scroll', setScroll, true);
         elements = [];
@@ -776,6 +783,9 @@ function AutoScroller(elements, options){
         down: {
             get: function(){ return down; }
         },
+        dnd: {
+            get: function() { return dnd }
+        },
         maxSpeed: {
             get: function(){ return maxSpeed; }
         },
@@ -791,8 +801,11 @@ function AutoScroller(elements, options){
 
     window.addEventListener('mousedown', onDown, false);
     window.addEventListener('touchstart', onDown, false);
+    window.addEventListener('dragstart', onDNDStart, false);
     window.addEventListener('mouseup', onUp, false);
     window.addEventListener('touchend', onUp, false);
+    window.addEventListener('dragend', onDNDEnd, false);
+    window.addEventListener('drop', onDNDEnd, false);
 
     /*
     IE does not trigger mouseup event when scrolling.
@@ -804,6 +817,7 @@ function AutoScroller(elements, options){
 
     window.addEventListener('mousemove', onMove, false);
     window.addEventListener('touchmove', onMove, false);
+    window.addEventListener('dragover', onMove, false);
 
     window.addEventListener('mouseleave', onMouseOut, false);
 
@@ -831,6 +845,16 @@ function AutoScroller(elements, options){
         down = false;
         cleanAnimation();
     }
+
+    function onDNDStart() {
+        dnd = true;
+    }
+
+    function onDNDEnd() {
+        dnd = false;
+        cleanAnimation();
+    }
+
     function cleanAnimation(){
       cancelAnimationFrame(animationFrame);
       cancelAnimationFrame(windowAnimationFrame);

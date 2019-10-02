@@ -77,7 +77,8 @@ var scroll = autoScroll([
     maxSpeed: 5,
     scrollWhenOutside: true,
     autoScroll: function(){
-        //Only scroll when the pointer is down, and there is a child being dragged.
+        // Only scroll when the pointer is down, and there is a child being dragged.
+        // You can you this.dnd if you use html5 drag and drop
         return this.down && drake.dragging;
     }
 });
